@@ -1,0 +1,33 @@
+---
+title: "2021 Summer Faculty Upskilling (NLP): Tentative Schedule"
+author: ""
+date: "5/20/2021"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: C:\Users\agilb\Google Drive\MAT241\exam.css
+---
+
+## Purpose
+
+The goal of this summer faculty upskilling is to engage faculty across different disciplines in learning and applying a new skill. We did this for the first time in the summer for 2020, where we focused on foundations of Data Science and Machine Learning. In 2021 we will focus on Natural Language Processing (NLP). The flow of this summer workshop will largely depend on the interests of the faculty members involved. We'll start with an introduction to R, and then gain exposure to NLP by working through Julia Silge and David Robinson's text [*Text Mining with R: A Tidy Approach*](https://www.tidytextmining.com/). As we near completion of the text, we will decide what to pursue next.
+
+## Tentative Schedule
+
+The following schedule is tentative and will serve to motivate our progress with "deadlines".
+
+**Week Of**       | **Topic**                 | **Reading** | **Assignment**
+------------------|---------------------------|-------------|----------------
+May 30 - June 5   | Intro to R and R Markdown | [Markdown Tutorial](https://rmarkdown.rstudio.com/lesson-1.html)         | Build your own Markdown Document
+June 6 - June 12  | Intro to TidyText, Sentiment Analysis | Chapters 1 and 2 | TBD
+June 13 - June 19 | TF-IDF, N-Grams, and Correlations | Chapters 3 and 4 | TBD
+June 20 - June 26 | Tidying Text | Chapter 5 | TBD, Twitter Data, Murder Hornets?
+June 27 - July 3  | Topic Models | Chapter 6 | TBD, more Murder Hornets, something from Sue and Dave?
+July 4 - August   | Case Studies and Real Projects | Chapters 7 - 9 | Where do we go from here?
+
+## Beyond the Book
+
+As mentioned, the flow of our summer workshop will be dictated by participant interests. The first six chapters of the Tidy Text book will lay a foundation for processing and analysing written text. We may elect to cover the case studies in the final three chapters of the book, but it may be more interesting to consider whether the NLP workshop has given us ideas for true, collaborative research projects. We also have the opportunity to continue learning about NLP -- in particular, there are opportunities to pursue more advanced topics like Part of Speech Tagging, predictive NLP, and machine learning models applied to text data (in particular, classification and clustering of text). We'll likely form subgroups based on individual interests at this point.
+
+
