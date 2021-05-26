@@ -264,7 +264,7 @@ pre code {
 <div id="installing-and-loading-packages" class="section level2">
 <h2>Installing and Loading Packages</h2>
 <p>We can install R packages using the command <code>install.packages(&quot;PACKAGE_NAME&quot;)</code>. Once packages are installed, we can load them into an R Session by running <code>library(PACKAGE_NAME)</code>. While packages only need to be <em>installed</em> once, they must be loaded in each R Session you intend to use them in (<strong>note:</strong> an R Session begins when R/RStudio are opened and ends when they are closed or terminated). We can install and load the <code>tidyverse</code> by running the code below:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;tidverse&quot;</span>)</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>Open RStudio and run these commands in the Console pane (left/lower-left). We’ll be using the <code>tidytext</code> package in the summer 2021 workshop – install this package as well. You can also load it if you want, but we won’t use it here.</li>
@@ -401,11 +401,37 @@ pre code {
 ## 4 audi         a4     2008    21    30 compact
 ## 5 audi         a4     1999    16    26 compact
 ## 6 audi         a4     1999    18    26 compact</code></pre>
-<p>We can combine <code>filter()</code> and <code>select()</code> through the pipe as well. For any pipe, the result of the “upstream” code (the code before the pipe) is passed into the function that follows the pipe.</p>
+<p>We can also select all columns <em>except</em> certain ones by preceding the column name with a <code>-</code>.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2005</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer, model, year, cty, hwy, class) <span class="sc">%&gt;%</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>displ,<span class="sc">-</span>cyl) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<pre><code>## # A tibble: 6 x 9
+##   manufacturer model  year trans      drv     cty   hwy fl    class  
+##   &lt;chr&gt;        &lt;chr&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;  
+## 1 audi         a4     1999 auto(l5)   f        18    29 p     compact
+## 2 audi         a4     1999 manual(m5) f        21    29 p     compact
+## 3 audi         a4     2008 manual(m6) f        20    31 p     compact
+## 4 audi         a4     2008 auto(av)   f        21    30 p     compact
+## 5 audi         a4     1999 auto(l5)   f        16    26 p     compact
+## 6 audi         a4     1999 manual(m5) f        18    26 p     compact</code></pre>
+<p>The <code>select()</code> function is also useful for changing the order of the columns.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(cty, hwy, manufacturer) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<pre><code>## # A tibble: 6 x 3
+##     cty   hwy manufacturer
+##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;       
+## 1    18    29 audi        
+## 2    21    29 audi        
+## 3    20    31 audi        
+## 4    21    30 audi        
+## 5    16    26 audi        
+## 6    18    26 audi</code></pre>
+<p>We can combine <code>filter()</code> and <code>select()</code> through the pipe as well. For any pipe, the result of the “upstream” code (the code before the pipe) is passed into the function that follows the pipe.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2005</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer, model, year, cty, hwy, class) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 6
 ##   manufacturer model       year   cty   hwy class  
 ##   &lt;chr&gt;        &lt;chr&gt;      &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  
@@ -416,7 +442,7 @@ pre code {
 ## 5 audi         a4 quattro  2008    19    27 compact
 ## 6 audi         a4 quattro  2008    17    25 compact</code></pre>
 <p><strong>A Note on Pipes:</strong> The advantage to the pipe operator is probably pretty clear by now. The code we just wrote says <em>take the <code>mpg</code> data set, filter it so that we only see cars manufactured since 2005, show me only the few columns I am interested in, and just let me see the first six rows for now</em>. The alternative to this would be writing code that looks a lot less readable:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">select</span>(<span class="fu">filter</span>(mpg, year <span class="sc">&gt;=</span> <span class="dv">2005</span>), manufacturer, model, year, cty, hwy, class))</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">select</span>(<span class="fu">filter</span>(mpg, year <span class="sc">&gt;=</span> <span class="dv">2005</span>), manufacturer, model, year, cty, hwy, class))</span></code></pre></div>
 </div>
 </div>
 <div id="summarizing-data" class="section level3">
@@ -425,9 +451,9 @@ pre code {
 <div id="computing-counts" class="section level4">
 <h4>Computing Counts</h4>
 <p>We can start with a simple question like, <em>how many cars from each manufacturer are contained in this dataset?</em> To answer this, we simply pipe the <code>mpg</code> data frame into the <code>count()</code> function, identifying the <code>manufacturer</code> column as the column we wish to count.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(manufacturer) <span class="sc">%&gt;%</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(manufacturer) <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 2
 ##   manufacturer     n
 ##   &lt;chr&gt;        &lt;int&gt;
@@ -438,10 +464,10 @@ pre code {
 ## 5 honda            9
 ## 6 hyundai         14</code></pre>
 <p>The counts are displayed in alphabetical order by manufacturer. We might be interested in the most well-represented manufacturers. We’ll do this with <code>arrange()</code> – we can pass this function the argument <code>desc(n)</code> to say that we want to arrange by our new count column in descending order, and let’s ask for the top 10 rows instead of the top 6.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(manufacturer) <span class="sc">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(manufacturer) <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 10 x 2
 ##    manufacturer     n
 ##    &lt;chr&gt;        &lt;int&gt;
@@ -456,13 +482,13 @@ pre code {
 ##  9 nissan          13
 ## 10 honda            9</code></pre>
 <p>Let’s say we wanted to know how many different models of car each manufacturer has released since the year 2000. This is a more complicated question. We would first need to filter the data so that we are only considering cars manufactured since the year 2000. Then we would subset to include only the <code>manufacturer</code> and <code>model</code> columns. There are lots of duplicates here, so we would want to remove them with a function called <code>distinct()</code>, and then finally we could count occurrences within each <code>manufacturer</code></p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer, model) <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(manufacturer) <span class="sc">%&gt;%</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer, model) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(manufacturer) <span class="sc">%&gt;%</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 2
 ##   manufacturer     n
 ##   &lt;chr&gt;        &lt;int&gt;
@@ -476,23 +502,23 @@ pre code {
 <div id="summarizing-numerical-data" class="section level4">
 <h4>Summarizing Numerical Data</h4>
 <p>Summarizing categorical data is most often done with counts, but we’ve got many more choices when we are working with numerical data. We have several measures of center or spread that we could choose from – we could even define our own metrics. Let’s say we wanted to know the median highway mile per gallon rating across all vehicles in our dataset. We’ll need the help of R’s <code>summarize()</code> function as well as the <code>median()</code> function for this.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span> </span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">median_hwy =</span> <span class="fu">median</span>(hwy))</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span> </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">median_hwy =</span> <span class="fu">median</span>(hwy))</span></code></pre></div>
 <pre><code>## # A tibble: 1 x 1
 ##   median_hwy
 ##        &lt;dbl&gt;
 ## 1         24</code></pre>
 <p>With the use of <code>summarize()</code> we can get multiple summaries at once. Let’s compute the mean and standard deviation for both the highway and city mile per gallon ratings across all of the vehicles in our data set.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span> </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy), <span class="at">std_deviation_hwy =</span> <span class="fu">sd</span>(hwy), <span class="at">mean_cty =</span> <span class="fu">mean</span>(cty), <span class="at">std_deviation_cty =</span> <span class="fu">sd</span>(cty))</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span> </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy), <span class="at">std_deviation_hwy =</span> <span class="fu">sd</span>(hwy), <span class="at">mean_cty =</span> <span class="fu">mean</span>(cty), <span class="at">std_deviation_cty =</span> <span class="fu">sd</span>(cty))</span></code></pre></div>
 <pre><code>## # A tibble: 1 x 4
 ##   mean_hwy std_deviation_hwy mean_cty std_deviation_cty
 ##      &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;             &lt;dbl&gt;
 ## 1     23.4              5.95     16.9              4.26</code></pre>
 <p>It might be useful if we could get grouped summary statistics. Let’s use <code>group_by()</code> to see how these measures vary across the different vehicle classes.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy), <span class="at">std_deviation_hwy =</span> <span class="fu">sd</span>(hwy), <span class="at">mean_cty =</span> <span class="fu">mean</span>(cty), <span class="at">std_deviation_cty =</span> <span class="fu">sd</span>(cty))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy), <span class="at">std_deviation_hwy =</span> <span class="fu">sd</span>(hwy), <span class="at">mean_cty =</span> <span class="fu">mean</span>(cty), <span class="at">std_deviation_cty =</span> <span class="fu">sd</span>(cty))</span></code></pre></div>
 <pre><code>## # A tibble: 7 x 5
 ##   class      mean_hwy std_deviation_hwy mean_cty std_deviation_cty
 ##   &lt;chr&gt;         &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;             &lt;dbl&gt;
@@ -503,11 +529,11 @@ pre code {
 ## 5 pickup         16.9              2.27     13               2.05 
 ## 6 subcompact     28.1              5.38     20.4             4.60 
 ## 7 suv            18.1              2.98     13.5             2.42</code></pre>
-<p>Let’s arrange the rust here by mean highway mile per gallon rating in the default ascending order.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy), <span class="at">std_deviation_hwy =</span> <span class="fu">sd</span>(hwy), <span class="at">mean_cty =</span> <span class="fu">mean</span>(cty), <span class="at">std_deviation_cty =</span> <span class="fu">sd</span>(cty)) <span class="sc">%&gt;%</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(mean_hwy)</span></code></pre></div>
+<p>Let’s arrange the result here by mean highway mile per gallon rating in the default ascending order.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(class) <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_hwy =</span> <span class="fu">mean</span>(hwy), <span class="at">std_deviation_hwy =</span> <span class="fu">sd</span>(hwy), <span class="at">mean_cty =</span> <span class="fu">mean</span>(cty), <span class="at">std_deviation_cty =</span> <span class="fu">sd</span>(cty)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(mean_hwy)</span></code></pre></div>
 <pre><code>## # A tibble: 7 x 5
 ##   class      mean_hwy std_deviation_hwy mean_cty std_deviation_cty
 ##   &lt;chr&gt;         &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;             &lt;dbl&gt;
@@ -524,13 +550,13 @@ pre code {
 <div id="transforming-data" class="section level3">
 <h3>Transforming Data</h3>
 <p>Often, you may be in a situation where you would like to create new columns, using the existing columns. This can be done using the <code>mutate()</code> command. The syntax is</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="sc">%&gt;%</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">&quot;new column name&quot;</span> <span class="ot">=</span> <span class="st">&quot;function of old columns&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="sc">%&gt;%</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">new_column_name =</span> function_of_old_columns)</span></code></pre></div>
 <p>In the <code>mpg</code> dataset, let’s add a column which is the ratio between the city <code>cty</code> and highway <code>hwy</code> gas milages, and use the <code>arrange()</code> function to find cars with the highest city to highway gas milages:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mpg_ratio =</span> cty<span class="sc">/</span>hwy) <span class="sc">%&gt;%</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer,model,cty,hwy,mpg_ratio) <span class="sc">%&gt;%</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mpg_ratio))</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mpg_ratio =</span> cty<span class="sc">/</span>hwy) <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer,model,cty,hwy,mpg_ratio) <span class="sc">%&gt;%</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mpg_ratio))</span></code></pre></div>
 <pre><code>## # A tibble: 234 x 5
 ##    manufacturer model               cty   hwy mpg_ratio
 ##    &lt;chr&gt;        &lt;chr&gt;             &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;
@@ -546,9 +572,9 @@ pre code {
 ## 10 ford         f150 pickup 4wd      14    17     0.824
 ## # ... with 224 more rows</code></pre>
 <p>Once pretty common step in an analysis is to create a categorical column from a variable which was originally numeric. In order to do this we can use the <code>if_else()</code> function. The three arguments of <code>if_else()</code> are a condition, and the values you want to fill if the condition is true or false, respectively.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pre_2000 =</span> <span class="fu">if_else</span>(year <span class="sc">&lt;</span> <span class="dv">2000</span>, <span class="st">&quot;yes&quot;</span>, <span class="st">&quot;no&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer,model,year,pre_2000)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">%&gt;%</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pre_2000 =</span> <span class="fu">if_else</span>(year <span class="sc">&lt;</span> <span class="dv">2000</span>, <span class="st">&quot;yes&quot;</span>, <span class="st">&quot;no&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(manufacturer,model,year,pre_2000)</span></code></pre></div>
 <pre><code>## # A tibble: 234 x 4
 ##    manufacturer model       year pre_2000
 ##    &lt;chr&gt;        &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;   
@@ -569,6 +595,10 @@ pre code {
 <h2>Final Thoughts</h2>
 <p>There is a lot more to learn about data manipulation and R in general. Sticking to the <code>tidyverse</code> and the other package groups within the <em>tidy</em>-ecosystem (ie. <code>tidytext</code>, <code>tidymodels</code>, etc.) will be beneficial because they are all built on common syntax and programmatic principles. You can read more about this in the <a href="https://tidyverse.tidyverse.org/articles/manifesto.html">TidyTools Manifesto</a>.</p>
 <p>You won’t be an expert after working through this document, but it should provide you with a solid start. Please feel free to add your own notes to this markdown file as we encounter more advanced functionality.</p>
+<hr />
+<p style="text-align:left;">
+<a href="https://agmath.github.io/FacultyUpskilling/2021_NLP/AccessingRandRStudio.html">Previous, Installing and Accessing R</a> <span style="float:right;"> <a href="https://agmath.github.io/FacultyUpskilling/2021_NLP/data_visualization.html">Next, Data Visualization</a></span>
+</p>
 </div>
 
 

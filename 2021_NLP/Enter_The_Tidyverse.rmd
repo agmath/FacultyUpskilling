@@ -27,7 +27,7 @@ This notebook addresses the following items.
 We can install R packages using the command `install.packages("PACKAGE_NAME")`. Once packages are installed, we can load them into an R Session by running `library(PACKAGE_NAME)`. While packages only need to be *installed* once, they must be loaded in each R Session you intend to use them in (**note:** an R Session begins when R/RStudio are opened and ends when they are closed or terminated). We can install and load the `tidyverse` by running the code below:
 
 ```{r echo = TRUE, eval = FALSE}
-install.packages("tidverse")
+install.packages("tidyverse")
 library(tidyverse)
 ```
 
@@ -120,6 +120,22 @@ mpg %>%
   head()
 ```
 
+We can also select all columns *except* certain ones by preceding the column name with a `-`.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  select(-displ,-cyl) %>%
+  head()
+```
+
+The `select()` function is also useful for changing the order of the columns.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  select(cty, hwy, manufacturer) %>%
+  head()
+```
+
 We can combine `filter()` and `select()` through the pipe as well. For any pipe, the result of the "upstream" code (the code before the pipe) is passed into the function that follows the pipe.
 
 ```{r echo = TRUE, eval = TRUE}
@@ -188,15 +204,15 @@ mpg %>%
 
 It might be useful if we could get grouped summary statistics. Let's use `group_by()` to see how these measures vary across the different vehicle classes.
 
-```{r echo = TRUE, eval = TRUE}
+```{r echo = TRUE, eval = TRUE, message = FALSE}
 mpg %>%
   group_by(class) %>%
   summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty))
 ```
 
-Let's arrange the rust here by mean highway mile per gallon rating in the default ascending order.
+Let's arrange the result here by mean highway mile per gallon rating in the default ascending order.
 
-```{r echo = TRUE, eval = TRUE}
+```{r echo = TRUE, eval = TRUE, message = FALSE}
 mpg %>%
   group_by(class) %>%
   summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty)) %>%
@@ -211,7 +227,7 @@ Often, you may be in a situation where you would like to create new columns, usi
 
 ```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
 dataset %>%
-  mutate("new column name" = "function of old columns")
+  mutate(new_column_name = function_of_old_columns)
 ```
 
 In the `mpg` dataset, let's add a column which is the ratio between the city `cty` and highway `hwy` gas milages, and use the `arrange()` function to find cars with the highest city to highway gas milages:
@@ -237,3 +253,8 @@ mpg %>%
 There is a lot more to learn about data manipulation and R in general. Sticking to the `tidyverse` and the other package groups within the *tidy*-ecosystem (ie. `tidytext`, `tidymodels`, etc.) will be beneficial because they are all built on common syntax and programmatic principles. You can read more about this in the [TidyTools Manifesto](https://tidyverse.tidyverse.org/articles/manifesto.html).
 
 You won't be an expert after working through this document, but it should provide you with a solid start. Please feel free to add your own notes to this markdown file as we encounter more advanced functionality.
+
+***
+<p style = "text-align:left;">[Previous, Installing and Accessing R](https://agmath.github.io/FacultyUpskilling/2021_NLP/AccessingRandRStudio.html)
+<span style = "float:right;"> [Next, Data Visualization](https://agmath.github.io/FacultyUpskilling/2021_NLP/data_visualization.html)</span>
+</p>

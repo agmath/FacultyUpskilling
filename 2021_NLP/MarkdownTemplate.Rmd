@@ -47,3 +47,9 @@ When working with an R Markdown file in RStudio, you should have an icon at the 
 ## Closing
 
 That's it for now. You'll likely want to keep some notes from this summer's workshop in these markdown notebooks because of the ability to include and execute code. If you have questions about markdown or encounter knitting errors, check out Yihui Xie's Definitive Guide to R Markdown, check out the [Markdown Cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) (or by navigating to the $\tt{Help\to Cheatsheets}$ menu within RStudio), or reach out to Adam or Bill.
+
+***
+
+<p style = "text-align:left;">[Data Visualization](https://agmath.github.io/FacultyUpskilling/2021_NLP/data_visualization.html)
+<span style = "float:right;"> Next, Week Two</span>
+</p>

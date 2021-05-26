@@ -69,3 +69,8 @@ Now that you have `R`, `RStudio`, and the `AppliedStatsInteractive` package inst
   + To get an introduction to R, you might be interested in Notebooks 2, 3, and 4.
   + Notice that the notes are out of order -- for example, Topic 11 comes before Topic 2.
   + If you choose to work through these, let me know if you have any questions or run into trouble. Not all of what is in these will be directly relevant to what we do this summer.
+ 
+***
+<p style = "text-align:left;">[Previous, Tentative Schedule](https://agmath.github.io/FacultyUpskilling/2021_NLP/TentativeSchedule.html)
+<span style = "float:right;"> [Next, Introduction to R](https://agmath.github.io/FacultyUpskilling/2021_NLP/Enter_The_Tidyverse.html)</span>
+</p>
