@@ -1,0 +1,37 @@
+---
+title: "Things to Know for Week 2 (Chapter 1)"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: C:\Users\agilb\Google Drive\MAT241\exam.css
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(tidytext)
+library(gutenbergr)
+library(janeaustenr)
+library(scales)
+library(wordcloud)
+library(reshape2)
+```
+
+Bill and I will do our best to stay a bit ahead of everyone, identifying potential issues we might encounter as we work through the *Text Mining with R* book from Julia Silge and David Robinson. Here are a few reminders and some things to be on the look-out for in Chapter 1.
+
+  + **FIRSTLY:** Please ask lots of questions. Whenever you run into an error, wonder how you might apply the tools discussed to a different text or corpus, would be interested in a slightly different analysis, or anything else just ask. Questions from the group are what will enhance this experience for everyone.
+  + **REMINDER:** Any time the book suggests running code of the form `library(PACKAGE_NAME)`, you'll be loading a new package into your R session. Packages need to be *installed* before they can be loaded, so if you see a package whose name looks new to you or you get an error stating that *there is no packaged called `PACKAGE_NAME`* you'll want to run `install.packages("PACKAGE_NAME")` and then retry running `library(PACKAGE_NAME)`.
+  + **HEADS UP:** The authors load several packages (`readr`, `dplyr`, `ggplot2`, `stringr`) which are part of the `tidyverse`. There are advantages to loading the packages separately, but we aren't doing anything that would observe a benefit. You can load all of the `tidyverse` packages at the beginning of your R Session by running `library(tidyverse)`.
+  + **NEW PACKAGES:** The new (non-`tidyverse`) packages you'll need this week are `gutenbergr`, `janeausten`, and `scales`.
+  + **WARNING:** On 5/26, the default mirror for the `gutenbergr` package was down. You may need to try accessing the Project Gutenberg files from a different mirror -- for example, try this `gutenberg_download(c(35, 36, 5230, 159), mirror = "http://mirrors.xmission.com/gutenberg")` in place of the suggested code for downloading the HG Wells texts.
+  + **WEIRD CODE:** As you work through the chapter, you'll encounter funky-looking code such as `regex("^chapter [\\divxlc]", ignore_case = TRUE)`. This is called a *regular expression* (or RegEx for short) and is useful for pattern matching. This one says, we want to match text that begins with the word *chapter* and is followed by a space and Roman-Numeral. The argument `ignore_case = TRUE` says that we won't consider upper and lower case characters as different for the purpose of pattern matching here. We will do more with regular expressions as we continue on, but you can find a RegEx cheatsheet [here](https://web.mit.edu/hackl/www/lab/turkshop/slides/regex-cheatsheet.pdf) and a RegEx-testing applet [here](https://regexr.com/).
+  
+***
+
+That's all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.
+
+***
+
+<p>
+<span style = "float:right;"> Next, "Homework" Assignment (Link to be added)</span>
+</p>
