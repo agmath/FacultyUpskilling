@@ -9,3 +9,7 @@ A repository for resources from faculty upskilling workshops.
     + [An R Markdown Template](https://agmath.github.io/FacultyUpskilling/2021_NLP/MarkdownTemplate.html), the source code will be posted to our Slack Workgroup
     + <u>Assignments:</u> TBD
   + Week Two: An Introduction to TidyText
+
+<hr>
+
+Built and maintained by [William Jamieson](https://www.williamtjamieson.com/) and [Adam Gilbert](https://sites.google.com/view/agilbertmath)
