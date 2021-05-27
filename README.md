@@ -1,4 +1,4 @@
-# Faculty Upskilling
+# FacultyUpskilling
 A repository of resources from faculty upskilling workshops. 
 
   + Week One: Getting Familiar with R
