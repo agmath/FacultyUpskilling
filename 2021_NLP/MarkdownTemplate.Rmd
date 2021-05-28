@@ -53,5 +53,5 @@ That's it for now. You'll likely want to keep some notes from this summer's work
 ***
 
 <p style = "text-align:left;">[Previous, Data Visualization](https://agmath.github.io/FacultyUpskilling/2021_NLP/data_visualization.html)
-<span style = "float:right;"> [Next, Week Two](https://agmath.github.io/FacultyUpskilling/)</span>
+<span style = "float:right;"> [Next, Homework Assignment](https://agmath.github.io/FacultyUpskilling/2021_NLP/intro_to_r_homework.html)</span>
 </p>
