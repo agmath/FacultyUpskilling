@@ -53,6 +53,6 @@ You can read more about what each of the variables represents by running `?fligh
 ***
 
 <p style = "text-align:left;">[Previous, R Markdown Template](https://agmath.github.io/FacultyUpskilling/2021_NLP/MarkdownTemplate.html)
-<span style = "float:right;">[Next, Week Two](https://agmath.github.io/FacultyUpskilling/2021_NLP/)</span>
+<span style = "float:right;">[Next, Week Two](https://agmath.github.io/FacultyUpskilling/)</span>
 </p>
 
