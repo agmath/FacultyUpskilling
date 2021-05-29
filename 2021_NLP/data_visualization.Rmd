@@ -26,7 +26,6 @@ In this introduction to data visualization, we will be using `ggplot2`, which is
 
 ```{r echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 library(palmerpenguins)
-
 penguins
 ``` 
 
@@ -34,7 +33,6 @@ Recall from our introduction to the `tidyverse` that we can read the pipe below 
 
 ```{r echo = TRUE, eval = FALSE, warning = FALSE, message = FALSE, fig.align = "center"}
 library(tidyverse)
-
 penguins %>%
   ggplot() 
 ```
@@ -47,12 +45,12 @@ The function `ggplot()` calls (or initializes) a plot object but won't actually 
   + `geom_histogram()` will create a histogram, requiring an `x` aesthetic.
   + `geom_bar()` will create a bargraph, requiring an `x` aesthetic.
 
-Let's create a scatterplot between `bill_length_mm` and `bill_width_mm` using the `geom_point()` layer.
+Let's create a scatterplot between `bill_length_mm` and `bill_depth_mm` using the `geom_point()` layer.
 
 ```{r echo = TRUE, eval = FALSE, warning = FALSE, message = FALSE, fig.align = "center"}
 penguins %>%
   ggplot() + 
-  geom_point(aes(x = bill_length_mm, y = bill_width_mm))
+  geom_point(aes(x = bill_length_mm, y = bill_depth_mm))
 ```
 
 The `ggplot()` function assumes by default that the first and second argument in `aes()` correspond to the x- and y-variables, so you may also write `aes(bill_length_mm, bill_depth_mm)` to save some typing. Each layer in a `ggplot` is added to the existing plot object using a `+` sign. This allows us to combine and customize plots quite easily, as you will see further on in this notebook.
@@ -200,7 +198,6 @@ A mosaic plot creates largely the same graphic, but makes it easier to see the p
 
 ```{r echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE, fig.align = "center"}
 library(ggmosaic)
-
 penguins %>%
   filter(!is.na(sex)) %>% 
   ggplot() +
