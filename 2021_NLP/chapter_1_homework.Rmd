@@ -1,0 +1,152 @@
+---
+title: 'Homework Problems: Chapter 1 '
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+
+```
+
+This homework set is intended to provide you with practice making word frequency counts and introductory analysis of texts from Project Gutenberg, which is an online repository of freely available books.
+
+**Feel free to ask questions or for help with errors in the Slack channel or during our weekly synchronous meeting.** 
+
+For these problems, we will be using the `gutenbergr` library, which can be installed using the following syntax:
+
+```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
+install.packages("gutenbergr")
+library(gutenbergr)
+```
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+library(gutenbergr)
+```
+
+Here is a quick introduction to some of the functionality included in `gutenbergr`. The following command provides a data frame of the texts that are available to download:
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+gutenberg_metadata
+```
+
+This data frame can be wrangled using the `dplyr` functions that we learned last week. For example, we can search for all of the books on Project Gutenberg which were authored by Arthur Conan Doyle.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse)
+
+gutenberg_metadata %>%
+  filter(author == "Doyle, Arthur Conan") %>%
+  select(gutenberg_id, title)
+```
+
+The command `gutenberg_download()` can be used to download full texts from the Project Gutenberg website. The `gutenbergr` package is mentioned in *Text Mining with R*, but the default mirror for the package is no longer operational, so using the syntax from the textbook will result in an error. We can manually set the `gutenberg_download()` function to use an updated mirror. Let's download *The Adventures of Sherlock Holmes*, whose `gutenberg_id` is `1661`.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+sherlock <- gutenberg_download(1661, mirror = "http://mirrors.xmission.com/gutenberg/")
+
+sherlock
+```
+
+
+1. Use the `unnest_tokens()` function from the `tidytext` library to create a data frame named `tidy_sherlock` which is tokenized by word. As a reminder, you can use the arrow operator (`<-`) to store the result of a series of commands into a new object, and you can print out the contents of an object just by calling its name. The result should look like this:
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+library(tidytext)
+
+tidy_sherlock <- sherlock %>%
+  unnest_tokens(word,text)
+
+tidy_sherlock
+```
+
+2. Remove any *stop words* and create a bar graph of the most commonly used words in *The Adventures of Sherlock Holmes*. (*Note:* There exist more than one dictionary of stop words. The data frame `stop_words` is available when you load the `tidytext` library, but you can also use `get_stopwords()` to access stop word dictionaries from other sources and other languages.) What are the most commonly used words?
+
+3. Repeat Problems 1 and 2, but for *The Return of Sherlock Holmes*, which has `gutenberg_id` equal to `108`. It would be a good idea to give the text data frame and tidied data frame different names (for example, `return_sherlock` and `tidy_return_sherlock`) because we will be using both books in the next problem.
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+tidy_sherlock <- tidy_sherlock %>%
+  anti_join(stop_words)
+
+return_sherlock <- gutenberg_download(108, mirror = "http://mirrors.xmission.com/gutenberg/")
+
+tidy_return_sherlock <- return_sherlock %>%
+  unnest_tokens(word,text) %>%
+  anti_join(stop_words)
+```
+
+In the upcoming problem, we will compare the relative frequencies of words in *The Adventures of Sherlock Holmes* and *The Return of Sherlock Holmes*. 
+
+4. Use the `bind_rows()` and `mutate()` functions to concatenate the `tidy_sherlock` and `tidy_return_sherlock` data frames together and add a column named `title` which identifies the book which the word came from. Your result should look similar to what appears below. If you want to make sure that you have words from both texts in the resulting data frame, try using the `head()` and `tail()` functions.
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+bind_rows(mutate(tidy_sherlock, title = "The Adventures of Sherlock Holmes"),
+          mutate(tidy_return_sherlock, title = "The Return of Sherlock Holmes"))
+```
+
+
+5. Pipe `%>%` the previous data frame into a mutate command `mutate(word = str_extract(word, "[a-z']+"))`. As mentioned in the text book, this regular expression removes brackets that are used for emphasis in the text. Then use the `count()` function to count the number of times that a word appears in each book. Again, your output should match what is seen below.
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+frequencies <- bind_rows(mutate(tidy_sherlock, title = "The Adventures of Sherlock Holmes"),
+          mutate(tidy_return_sherlock, title = "The Return of Sherlock Holmes")) %>%
+  mutate(word = str_extract(word, "[a-z']+")) %>%
+  count(title,word)
+
+frequencies
+```
+
+6. Make a new column named `proportion` which divides each word frequency by the total number of words in each book, and use the `select()` function to drop the `n` column. Below is an example of what your result should look like.
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+frequencies <- frequencies %>%
+  group_by(title) %>%
+  mutate(proportion = n / sum(n)) %>%
+  select(-n) %>%
+  ungroup()
+
+frequencies
+```
+
+7. Our goal is to create columns corresponding to each book whose values are equal to the proportion of each word. We will use the `pivot_wider()` function, which you saw used in the chapter if you are working from the electronic text. If you are using a physical copy of the text, you saw the functions `gather()` and `spread()` used to pivot data frames between *wide* and *long* format,  `pivot_wider()` is a more up-to-date version of the `spread()` function used in the textbook. The arguments of `pivot_wider()` are `names_from`, which should be set equal to the column which contains the variables that you would like to become new columns. The column containing values which will fill the new columns is identified by `values_from`. Pipe `%>%` the data frame from the previous problem into this function:
+
+```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
+pivot_wider(names_from = title, values_from = proportion)
+```
+
+The resulting data frame should look like this:
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+frequencies <- frequencies %>%
+  pivot_wider(names_from = title, values_from = proportion)
+
+frequencies
+```
+
+8. Finally, we are ready to visualize the word frequencies. We will make a scatter plot similar to the one created in the textbook. The scatter plot coordinates will be the word frequencies from each book. A `geom_text()` layer will label the scatter plot points with their associated words. First, load the `scales` library, and then pipe `%>%` the data frame from the previous problem into the `ggplot()` command below. The axis scales are logarithmic in order to have the scatter plot be less crowded. What words were more often used in *The Adventures of Sherlock Holmes*? What about in *The Return of Sherlock Holmes*?
+
+```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
+  ggplot(aes(`The Adventures of Sherlock Holmes`,`The Return of Sherlock Holmes`)) + 
+  #We are using geom_jitter() rather than geom_point() so that the points are not plotted on top of one another
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
+  #geom_abline() adds the diagonal line. Words close to the diagonal are used equally frequently in the books
+  geom_abline(lty = 2) + 
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) + 
+  scale_y_log10(labels = percent_format()) +
+  scale_color_gradient(limits = c(0,0.001), low = "darkslategray4", high = "gray75") +
+  ggtitle("Word Frequencies Comparison")
+```
+
+9. Try repeating these exercises with two other books from Project Gutenberg!
+
+***
+
+<p style = "text-align:left;">[Previous, Read Tidy Text Chapter 1](https://www.tidytextmining.com/tidytext.html)
+<span style = "float:right;">[Next, Week Three](https://agmath.github.io/FacultyUpskilling/)</span>
+</p>
+
