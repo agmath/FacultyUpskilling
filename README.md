@@ -7,7 +7,7 @@ A repository of resources from faculty upskilling workshops.
     + [Intro to R and the Tidyverse](https://agmath.github.io/FacultyUpskilling/2021_NLP/Enter_The_Tidyverse.html)
     + [Introduction to Data Visualization](https://agmath.github.io/FacultyUpskilling/2021_NLP/data_visualization.html)
     + [An R Markdown Template](https://agmath.github.io/FacultyUpskilling/2021_NLP/MarkdownTemplate.html)
-    + <u>Assignments:</u> [Homework 1](https://agmath.github.io/FacultyUpskilling/2021_NLP/intro_to_r_homework.html) <br> [Solutions](https://agmath.github.io/FacultyUpskilling/2021_NLP/intro_to_r_homework_answers.html)
+    + <u>Assignments:</u> <table><tr><td>[Homework 1](https://agmath.github.io/FacultyUpskilling/2021_NLP/intro_to_r_homework.html)</td></tr><tr><td>[Solutions](https://agmath.github.io/FacultyUpskilling/2021_NLP/intro_to_r_homework_answers.html)</tr></td></table>
   + Week Two: An Introduction to TidyText
     + [Heads Up](https://agmath.github.io/FacultyUpskilling/2021_NLP/ThingsToKnow_Week2.html)
     + Work Through Chapter 1: [*The Tidy Text Format*](https://www.tidytextmining.com/tidytext.html)
