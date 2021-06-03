@@ -1,0 +1,131 @@
+---
+title: 'Homework Problems: Introduction to R '
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+```
+
+This homework set is intended to provide you with practice wrangling and visualizing data. 
+
+**Feel free to ask questions or for help with errors in the Slack channel or during our weekly synchronous meeting.** 
+
+For these problems, we will use the `nycflights13` datasets, which can be downloaded using the commands
+
+```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
+install.packages("nycflights13")
+library(nycflights13)
+```
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+library(nycflights13)
+```
+
+You now have access to five data frames: `airlines`, `airports`, `flights`, `weather`, and `planes`. A portion of the `flights` dataframe is shown below:
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights
+```
+
+You can read more about what each of the variables represents by running `?flights` in the console.
+
+1. Visualize the departure delays in the `flights` data set using a histogram. You should relabel the axes and give your plot a title. What information have you learned from the plot?
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights %>%
+  ggplot() +
+  geom_histogram(aes(dep_delay), bins = 30) +
+  labs(x = "Departure Delay (Minutes)", 
+       y = "Count",
+       title = "Histogram of Departure Delays from NYC Airports, 2013")
+```
+
+The vast majority of departure delays are close to 0 minutes. The longer the departure delay, the smaller number of flights there are that have that departure delay.
+
+2. Create a new column in the data set called `time_gained` which is equal to the departure delay subtracted from the arrival delay. Visualize the `time_gained` variable using a box plot. Describe what you see.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights %>%
+  mutate(time_gained = arr_delay - dep_delay) %>%
+  ggplot() +
+  geom_boxplot(aes(time_gained)) +
+  labs(x = "Time Gained During Flight (Minutes)", y = NULL)
+```
+
+An average flight *gains* time in the air, and the vast majority of flights only gain or lose a small amount of time. There are tons of outliers in the data, mostly due to flights that lose a significant amount of time in the air. The data is skewed to the right- the flights can only gain so much time in the air, but they can lose significantly more.
+
+3. Do some airlines tend to have more arrival delays than others? Use side-by-side box plots to visualize the arrival delays of each airline.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights %>%
+  ggplot() + 
+  geom_boxplot(aes(x = carrier, y = arr_delay)) +
+  labs(x = "Airline Carrier", y = "Arrival Delay (Minutes)")
+```
+
+
+4. Let's answer the question above in a slightly different way. Calculate the median arrival delays of each airline using the `median()` function. (You'll want to add the argument `na.rm = TRUE` inside the `median()` function to ignore the `NA` values in the data frame.) Sort the airline carriers from the airlines by median arrival delay. Which airlines are consistently ahead of schedule? You can consult the `airlines` data frame to find the airline names that correspond to the abbreviations.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights %>%
+  group_by(carrier) %>%
+  summarize(median_arr_delay = median(arr_delay, na.rm = TRUE)) %>%
+  arrange(median_arr_delay) 
+```
+
+You can manually look up the airline names in the `airlines` data frame, or you can use a `left_join` function to add the names:
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights %>%
+  group_by(carrier) %>%
+  summarize(median_arr_delay = median(arr_delay, na.rm = TRUE)) %>%
+  arrange(median_arr_delay) %>%
+  left_join(airlines, by = "carrier") %>%
+  select(-carrier) %>%
+  select(name,median_arr_delay)
+```
+
+Alaska and Hawaiian Airlines are consistently ahead of schedule. (Must be something about not being in the contiguous United States!) It would be interesting to see how the `air_time` of a flight correlates with the `arr_delay`. One thing that these airlines likely have in common is having long flight durations!
+
+5. From the `weather` data frame, visualize the temperature at the `EWR` airport during the entire month of January in 2013. *Hint:* Use the `origin`, `year`, and `month` variables to `filter()` the data frame, and use `time_hour` as the x coordinate in the plot.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+weather %>%
+  filter(origin == "EWR",
+         year == 2013,
+         month == 1) %>%
+  ggplot() +
+  geom_line(aes(x = time_hour, y = temp)) + 
+  labs(x = NULL, y = "Temperature") + 
+  ggtitle("EWR Airport Temperatures January 2013")
+  
+```
+
+6. Make a bar plot which visualizes the top 30 destinations for planes which depart from `JFK` airport.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights %>%
+  filter(origin == "JFK") %>%
+  count(dest) %>%
+  arrange(desc(n)) %>%
+  head(n=30) %>%
+  ggplot() +
+  geom_col(aes(x = n, y = reorder(dest,n))) +
+  labs(x = "Count", y = "Destination Airport")
+```
+
+7. Pick some other variables that you are interested in from these data frames and make appropriate visualizations.
+
+***
+
+<p style = "text-align:left;">[Previous, R Markdown Template](https://agmath.github.io/FacultyUpskilling/2021_NLP/MarkdownTemplate.html)
+<span style = "float:right;">[Next, Week Two](https://agmath.github.io/FacultyUpskilling/)</span>
+</p>
+
