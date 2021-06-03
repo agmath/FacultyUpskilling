@@ -11,7 +11,7 @@ A repository of resources from faculty upskilling workshops.
   + Week Two: An Introduction to TidyText
     + [Heads Up](https://agmath.github.io/FacultyUpskilling/2021_NLP/ThingsToKnow_Week2.html)
     + Work Through Chapter 1: *The Tidy Text Format*
-    + <u>Assignments:</u> TBD
+    + <u>Assignments:</u> [Homework 2](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_1_homework.html)
 
 <hr>
 
