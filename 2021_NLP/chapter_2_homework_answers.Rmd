@@ -164,20 +164,22 @@ tidy_barsoom %>%
 5. $\bigstar$**Challenge:** Burroughs' Barsoom series seems to be quite negative. See if you can produce a barplot displaying the most frequently occurring negative words for each of the books individually (use faceting).$\bigstar$
 
 ```{r, fig.height = 8}
-#Working on getting bars ordered appropriately within each book
-tidy_barsoom %>%
+tidy_barsoom %>% 
   inner_join(get_sentiments("bing")) %>%
   filter(sentiment == "negative") %>%
   group_by(title) %>%
-  count(word, sort = TRUE) %>%
-  slice_max(n , n = 15) %>%
-  mutate(word = reorder(word, n)) %>%
+  count(word) %>%
+  top_n(15) %>%
   ungroup() %>%
+  mutate(title = as.factor(title),
+         word = reorder_within(word, n, title)) %>%
   ggplot() +
   geom_col(aes(x = word, y = n, fill = title), show.legend = FALSE) +
   labs(x = "", y = "", title = "Most Common Negative Words", subtitle = "Barsoom Series") +
   coord_flip() +
+  scale_x_reordered() +
   facet_wrap(~title, ncol = 2, scales = "free")
+
 ```
 
 Now let's move to word clouds. 
