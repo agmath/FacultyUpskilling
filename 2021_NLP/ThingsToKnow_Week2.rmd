@@ -4,7 +4,7 @@ output:
   html_document:
     theme: cerulean
     highlight: pygments
-    css: C:\Users\agilb\Google Drive\MAT241\exam.css
+    css: lab.css
 ---
 
 ```{r setup, include = FALSE}
@@ -24,7 +24,7 @@ Bill and I will do our best to stay a bit ahead of everyone, identifying potenti
   + **HEADS UP:** The authors load several packages (`readr`, `dplyr`, `ggplot2`, `stringr`) which are part of the `tidyverse`. There are advantages to loading the packages separately, but we aren't doing anything that would observe a benefit. You can load all of the `tidyverse` packages at the beginning of your R Session by running `library(tidyverse)`.
   + **NEW PACKAGES:** The new (non-`tidyverse`) packages you'll need this week are `gutenbergr`, `janeausten`, and `scales`.
   + **WARNING:** On 5/26, the default mirror for the `gutenbergr` package was down. You may need to try accessing the Project Gutenberg files from a different mirror -- for example, try this `gutenberg_download(c(35, 36, 5230, 159), mirror = "http://mirrors.xmission.com/gutenberg")` in place of the suggested code for downloading the HG Wells texts.
-  + **WEIRD CODE:** As you work through the chapter, you'll encounter funky-looking code such as `regex("^chapter [\\divxlc]", ignore_case = TRUE)`. This is called a *regular expression* (or RegEx for short) and is useful for pattern matching. This one says, we want to match text that begins with the word *chapter* and is followed by a space and Roman-Numeral. The argument `ignore_case = TRUE` says that we won't consider upper and lower case characters as different for the purpose of pattern matching here. We will do more with regular expressions as we continue on, but you can find a RegEx cheatsheet [here](https://web.mit.edu/hackl/www/lab/turkshop/slides/regex-cheatsheet.pdf) and a RegEx-testing applet [here](https://regexr.com/).
+  + **WEIRD CODE:** As you work through the chapter, you'll encounter funky-looking code such as `regex("^chapter [\\divxlc]", ignore_case = TRUE)`. This is called a *regular expression* (or RegEx for short) and is useful for pattern matching. This one says, we want to match text that begins with (`^`) the word *chapter*, is followed by a space and either a decimal digit (`\\d`) or Roman-Numeral. The argument `ignore_case = TRUE` says that we won't consider upper and lower case characters as different for the purpose of pattern matching here. We will do more with regular expressions as we continue on, but you can find a RegEx cheatsheet [here](https://web.mit.edu/hackl/www/lab/turkshop/slides/regex-cheatsheet.pdf) and a RegEx-testing applet [here](https://regexr.com/).
   
 ***
 

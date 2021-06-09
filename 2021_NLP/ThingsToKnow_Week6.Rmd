@@ -1,0 +1,38 @@
+---
+title: "Things to Know for Week 6 (Chapter 5)"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(tidytext)
+library(gutenbergr)
+library(janeaustenr)
+library(scales)
+library(wordcloud)
+library(reshape2)
+```
+
+Here are a few reminders and some things to be on the look-out for in Chapter 4.
+
+  + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
+  
+  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `tm`, `topicmodels`, `quanteda`
+  
+  + **NEW CODE:** Sometimes it isn't worth loading an entire package because we only need its functionality once or twice. In these cases, we can use the syntax `package_name::function_name()` to use the function `function_name()` from the package `package_name` without first loading `package_name` into our R Session.
+  
+
+  
+***
+
+That's all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.
+
+***
+
+<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
+</p>

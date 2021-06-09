@@ -1,0 +1,255 @@
+---
+title: 'Chapter 2 Supplement: Accessing the Twitter Live Stream'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(rtweet)
+library(reshape2)
+library(wordcloud)
+```
+
+At our Week 1 meeting, participants expressed an interest in the possibility of analyzing real-time data from Twitter. In this assignment you will obtain credentials to access the Twitter live stream through Twitter's API, you'll pull recent tweets involving Alexandria Ocasio-Cortez (\@AOC, \@repAOC, \#AOC) and Marjorie Taylor-Green (\@mtgreene, \@repMTG, \#MTG).
+
+1. In order to access Twitter's API, you'll need credentials. Head over to [Developer.Twitter.com](https://developer.twitter.com/en){target="_blank"} -- once there, do the following (or [follow along with Karolina](https://youtu.be/vlvtqp44xoQ){target="_blank"}).  
+    + Click the button in the top-right to *Apply* for credentials.
+    + Click the button to *Apply for a Developer Account*.
+    + Log in with your regular Twitter account info (unfortunately you'll need a Twitter account to do this).
+    + Fill in the required fields as honestly as possible. Essentially we are requesting this account/building this app to gain experience with NLP. We'll be applying sentiment analysis to tweets.
+    + Once you've filled in all of the required fields, *View and Accept the Terms and Conditions*.
+    + You'll get an email once your account has been authorized -- click the link in the message to confirm and then log back into [Developer.Twitter.com](https://developer.twitter.com/en)
+    + Click the *Projects & Apps* link and then click on the button to *Create an App* -- again, fill in the required fields as honestly as possible. We are using this app to connect to the Twitter API and to practice sentiment analysis and other NLP tools with tweets.
+    +  Click the *Create* button and then click on the link to *keys and tokens*. You'll need the *consumer keys* and *authentication tokens*. If you don't see them displayed, just click the *Generate/Regenerate* buttons. Keep these available, you'll need them.
+
+Alright, now we are ready for the fun part. Open up a new R Markdown document (or R Script, if you prefer) and we'll get started.
+
+2. We will need the following libraries for this tutorial: `tidyverse`, `tidytext`, `devtools`, and `rtweet`. Run the following and, if prompted, type 1 and hit `Enter/Return` to update all necessary packages.  
+    ```{r, echo = TRUE, eval = FALSE}
+    install.packages("devtools")
+    ```  
+And then,  
+    ```{r, echo = TRUE, eval = FALSE}
+    devtools::install_github('mkearney/rtweet')
+    ```  
+Now load the `tidyverse`, `tidytext`, `reshape2`, `wordcloud`, and `rtweet` libraries with the `library()` command. You don't need to load `devtools`.
+
+3. Let's pass the authentication credentials that R will need to access the twitter API and then create our initial connection. You might want to set the `echo` parameter for this code chunk to `FALSE` -- this will prevent the code from being displayed in your markdown document. We are all pretty trustworthy people here, but its best not to put your access credentials on display.  
+    ```{r echo = TRUE, eval = FALSE}
+    api_key <- "COPY_PASTE_CONSUMER_KEY"
+    api_secret <- "COPY_PASTE_CONSUMER_SECRET"
+    access_token <- "COPY_PASTE_AUTHORIZATION_KEY"
+    access_secret <- "COPY_PASTE_AUTHORIZATION_SECRET"
+
+    token <- create_token(app = "PASTE_YOUR_APP_NAME",
+                          consumer_key = api_key,
+                          consumer_secret = api_secret,
+                          access_token = access_token,
+                          access_secret = access_secret)
+```
+
+Now that you've done this, R has stored your credentials for future use. The `rtweet` package should be able to find this `token` if you want to connect to the twitter API in another R session.
+
+4. Let's run a search for the most recent 1,000 tweets involving AOC. We'll exclude retweets.  
+    ```{r}
+    #Allow the markdown document to access the token you 
+    #created with create_token()
+    auth_as("create_token")
+
+    #Search and store tweets including @AOC OR @repAOC OR #AOC
+    AOC_tweets <- search_tweets("@AOC OR @repAOC OR #AOC", n = 1000, include_rts = FALSE)
+
+    #View the head of the resulting data frame
+    AOC_tweets %>% head()
+    ```
+
+Your result may have returned fewer than the 1,000 tweets we requested. This is because Twitter's standard search API goes back only about 6 to 9 days. There are some *premium* search API's for Twitter that go back 30 days or longer, but they are paid services. That being said, you can see that we get lots of information on each of the tweets we were able to retrieve -- 73 columns worth!  We can see the text of the most recent 10 tweets by running:
+
+```{r}
+AOC_tweets %>%
+  pull(text) %>%
+  head(n = 10)
+```
+
+4. Use similar code to extract the most recent 1,000 tweets involving Marjorie Taylor-Greene.  
+    ```{r, echo = FALSE, eval = TRUE, include = FALSE}
+    MTG_tweets <- search_tweets("@mtgreene OR @repMTG OR #MTG", n = 1000, include_rts = FALSE)
+
+    #View the head of the resulting data frame
+    MTG_tweets %>% head()
+
+    MTG_tweets %>%
+      pull(text) %>%
+      head(n = 10)
+    ```
+
+Now that we have our two sets of tweets, we can prepare the data for sentiment analysis. There's lots of great information in these data frames, but we will just keep to the `text` column. We'll keep each individual tweet as its own document, this means we won't need to `group_by()` or `mutate()` anything before proceeding to `unnest_tokens()`. We should however, reduce the number of columns we are looking at. 
+
+6. Create `tidy_AOC_tweets` and `tidy_MTG_tweets` by first `select()`ing the `status_id`, `created_at`, `screen_name`, and `text` columns and then passing the result to `unnest_tokens()` to generate a new `word` column from the existing `text` column.  
+    ```{r, include = FALSE}
+    tidy_AOC_tweets <- AOC_tweets %>%
+      select(status_id, created_at, screen_name, text) %>%
+      unnest_tokens(word, text)
+
+    tidy_MTG_tweets <- MTG_tweets %>%
+      select(status_id, created_at, screen_name, text) %>%
+      unnest_tokens(word, text)
+
+    tidy_AOC_tweets %>% head()
+    tidy_MTG_tweets %>% head()
+    ```
+
+7. Now that you've tokenized your tweets, generate frequency `count()`s for the words in each data frame. What are the most common words used in tweets involving AOC? What are the most common words used in tweets involving MTG? You can choose to display your results as a table or to use a visual, like a bar graph.  
+    ```{r, include = FALSE}
+    tidy_AOC_tweets %>%
+      count(word) %>%
+      arrange(desc(n))
+
+    tidy_AOC_tweets %>%
+      count(word) %>%
+      arrange(desc(n)) %>%
+      slice(1:30) %>%
+      ggplot() + 
+      geom_col(aes(x = n, y = reorder(word, n))) +
+      labs(title = "Most Common Words", subtitle = "Tweets involving AOC", x = "Count", y = NULL)
+
+    tidy_MTG_tweets %>%
+      count(word) %>%
+      arrange(desc(n))
+
+    tidy_MTG_tweets %>%
+      count(word) %>%
+      arrange(desc(n)) %>%
+      slice(1:30) %>%
+      ggplot() + 
+      geom_col(aes(x = n, y = reorder(word, n))) +
+      labs(title = "Most Common Words", subtitle = "Tweets involving Marj", x = "Count", y = NULL)
+    ```
+
+8. The majority of these words are pretty innocuous. This is why we often eliminate `stop_words` from a corpus before working with it. Reproduce your earlier code, but before computing counts, add an `anti_join(stop_words)` to your *pipeline* prior to computing the word counts.  
+    ```{r, include = FALSE}
+    tidy_AOC_tweets %>%
+      anti_join(stop_words) %>%
+      count(word) %>%
+      arrange(desc(n))
+
+    tidy_AOC_tweets %>%
+      anti_join(stop_words) %>%
+      count(word) %>%
+      arrange(desc(n)) %>%
+      slice(1:30) %>%
+      ggplot() + 
+      geom_col(aes(x = n, y = reorder(word, n))) +
+      labs(title = "Most Common Words", subtitle = "Tweets involving AOC", x = "Count", y = NULL)
+
+    tidy_MTG_tweets %>%
+      anti_join(stop_words) %>%
+      count(word) %>%
+      arrange(desc(n))
+
+    tidy_MTG_tweets %>%
+      anti_join(stop_words) %>%
+      count(word) %>%
+      arrange(desc(n)) %>%
+      slice(1:30) %>%
+      ggplot() + 
+      geom_col(aes(x = n, y = reorder(word, n))) +
+      labs(title = "Most Common Words", subtitle = "Tweets involving Marj", x = "Count", y = NULL)
+    ```
+
+That's a little better. We see some artifacts that could still be cleaned up. For example, `t.co` is the prefix to a bitly link to a twitter post, and `http`/`https` often show up in links as well. We can remove those by either filtering them out or adding rows to our list of `stop_words`. Doing this additional filtering looks something like what appears below, where the third line says we would like to filter to only include rows where the `word` is not (`!`) in (`%in%`) the list containing `mtg`, `repmtg`, `t.co`, `http`, and `https`.
+
+```{r, eval = FALSE}
+tidy_MTG_tweets %>%
+  anti_join(stop_words) %>%
+  filter(!(word %in% c("mtg", "repmtg", "t.co", "http", "https"))) %>%
+  count(word) %>%
+  arrange(desc(n)) %>%
+  slice(1:30) %>%
+  ggplot() + 
+  geom_col(aes(x = n, y = reorder(word, n))) +
+  labs(title = "Most Common Words", subtitle = "Tweets involving Marj", x = "Count", y = NULL)
+```
+
+Now let's think about a sentiment analysis on the two sets of tweets.
+
+9. Let's try to mimic what is being done on page 18 of our textbook to get a `net_sentiment` score for each tweet. You won't need to pass an index to the `count()` function. Instead, try grouping by `status_id` before creating the counts.  
+    ```{r, include = FALSE}
+    tidy_AOC_tweets %>%
+      inner_join(get_sentiments("bing")) %>%
+      group_by(status_id) %>%
+      count(sentiment) %>%
+      pivot_wider(names_from = sentiment, values_from = n) %>%
+      mutate(net_sentiment = positive - negative) %>%
+      ggplot() +
+      geom_histogram(aes(x = net_sentiment), bins = 9)
+
+    tidy_MTG_tweets %>%
+      inner_join(get_sentiments("bing")) %>%
+      group_by(status_id) %>%
+      count(sentiment) %>%
+      pivot_wider(names_from = sentiment, values_from = n) %>%
+      mutate(net_sentiment = positive - negative) %>%
+      ggplot() +
+      geom_histogram(aes(x = net_sentiment), bins = 9)
+    ```
+
+How do the two distributions compare? Let's look a wider array of sentiments with the `nrc` dictionary.
+
+10. For each individual set of tidy tweets, use an `inner_join()` with the `nrc` sentiment dictionary, group the resulting data frames by `sentiment` and produce counts for each sentiment. What are the most prevalent emotions in each set of tweets?  
+    ```{r, include = FALSE}
+    tidy_AOC_tweets %>%
+      inner_join(get_sentiments("nrc")) %>%
+      count(sentiment) %>%
+      ggplot() +
+      geom_col(mapping = aes(x = reorder(sentiment, n), y = n)) + 
+      labs(x = NULL, y = "Count", title = "Tweet Sentiments", subtitle = "Alexandria Ocasio-Cortez") +
+      coord_flip()
+
+    tidy_MTG_tweets %>%
+      inner_join(get_sentiments("nrc")) %>%
+      count(sentiment) %>%
+      ggplot() +
+      geom_col(mapping = aes(x = reorder(sentiment, n), y = n)) + 
+      labs(x = NULL, y = "Count", title = "Tweet Sentiments", subtitle = "Marj") +
+      coord_flip()
+    ```
+
+Well, that was insightful! Let's end this assignment by creating a comparison word cloud.
+
+11. Mimic the code our textbook uses to build a comparison cloud of positive and negative words used within each set of tidy tweets. Try doing this with the `bing` library first and then switch to `nrc` to see if you can compare a different pair of emotions.  
+    ```{r, include = FALSE}
+    tidy_AOC_tweets %>%
+      inner_join(get_sentiments("bing")) %>%
+      count(word, sentiment, sort = TRUE) %>%
+      acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+      comparison.cloud(colors = c("gray20", "gray80"),
+                       max.words = 100)
+
+    tidy_MTG_tweets %>%
+      inner_join(get_sentiments("bing")) %>%
+      count(word, sentiment, sort = TRUE) %>%
+      acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+      comparison.cloud(colors = c("gray20", "gray80"),
+                       max.words = 100)
+    ```
+
+Given the positions of these two Representatives, it is likely that the word "trump" snuck in there as a positive word. Its pretty likely that when these tweets reference the "trump" they are indicating the *Former Guy* rather than the noun/verb. Try reproducing your word clouds but filter out "trump" since the sentiment dictionary is incorrectly interpreting that word.
+
+## Final Thoughts
+
+There it is! You've accomplished a lot here. You've gained the ability to pull tweets from Twitter's Search API and you've performed a sentiment analysis on tweets from, at, and mentioning two United States Representatives. You can now take these new found super powers and apply them to different twitter topics, users, hashtags, and more. There's also a lot more we can do with data from twitter, including topic modeling, analyzing the social network that lies beneath the surface (looking at the web of tweets, retweets, replies, and mentions to identify popular, influential, or important players within particular conversations), and more. We'll probably revisit data from twitter later on in the workshop. 
+
+***
+
+<p style = "text-align:left;">[Previous, Chapter Two Homework](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_homework.html)
+<span style = "float:right;">[Next, Week Four](https://agmath.github.io/FacultyUpskilling/)</span>
+</p>
+

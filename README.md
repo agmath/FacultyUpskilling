@@ -12,7 +12,12 @@ A repository of resources from faculty upskilling workshops.
     + [Heads Up](https://agmath.github.io/FacultyUpskilling/2021_NLP/ThingsToKnow_Week2.html)
     + Work Through Chapter 1: [*The Tidy Text Format*](https://www.tidytextmining.com/tidytext.html)
     + <u>Assignments:</u> [Homework 2](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_1_homework.html) [(Solutions)](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_1_homework_answers.html)
-
+  + Week Three: Sentiment Analysis
+    + [Heads Up](https://agmath.github.io/FacultyUpskilling/2021_NLP/ThingsToKnow_Week3.html)
+    + Work Through Chapter 2: [*Sentiment Analysis with Tidy Data*](https://www.tidytextmining.com/sentiment.html)
+    + <u>Assignments:</u> 
+	  + [Homework 3](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_homework.html) [(Solutions)](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_homework_answers.html)
+	  + [Sentiment Analysis with Twitter](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_twitter_tutorial.html)
 <hr>
 
 Built and maintained by [William Jamieson](https://www.williamtjamieson.com/) and [Adam Gilbert](https://sites.google.com/view/agilbertmath)

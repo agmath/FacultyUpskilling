@@ -1,0 +1,37 @@
+---
+title: "Things to Know for Week 3 (Chapter 2)"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(tidytext)
+library(gutenbergr)
+library(janeaustenr)
+library(scales)
+library(wordcloud)
+library(reshape2)
+```
+
+Here are a few reminders and some things to be on the look-out for in Chapter 2.
+
+  + **REMINDER 1:** Any time the book suggests running code of the form `library(PACKAGE_NAME)`, you'll be loading a new package into your R session. Packages need to be *installed* before they can be loaded, so if you see a package whose name looks new to you or you get an error stating that *there is no packaged called `PACKAGE_NAME`* you'll want to run `install.packages("PACKAGE_NAME")` and then retry running `library(PACKAGE_NAME)`. 
+  + **Reminder 2:** Additionally, even if you loaded a library the last time you used R, you'll need to re-load it into your current session with the `library()` command.
+  + **HEADS UP:** As with last week, the authors load several packages (`readr`, `dplyr`, `ggplot2`, `stringr`) which are part of the `tidyverse`. There are advantages to loading the packages separately, but we aren't doing anything that would observe a benefit. You can load all of the `tidyverse` packages at the beginning of your R Session by running `library(tidyverse)`.
+  + **NEW PACKAGES:** The new packages you'll need this week are `wordcloud` and `reshape2`. Be sure to install them before you load them.
+  + **WARNING:** The default mirror for the `gutenbergr` package is no longer functioning -- an update should be made to that package soon to change the default mirror. In the meantime, you'll still need to access the Project Gutenberg files from a different mirror -- for example, we've been using the mirror site `"http://mirrors.xmission.com/gutenberg"`.
+  + **REGULAR EXPRESSIONS:** In Chapter 1 we encountered regular expressions, which are really useful for pattern matching. As you work through Chapter 2, you'll encounter more of these. Feel free to ask questions in Slack if you have trouble decoding a regular expression, try experimenting on your own, or ask about how you might construct a regular expression for a specific use case. As a reminder, you can find a RegEx cheatsheet [here](https://web.mit.edu/hackl/www/lab/turkshop/slides/regex-cheatsheet.pdf){target="_blank"} and a RegEx-testing applet [here](https://regexr.com/){target="_blank"}.
+  
+***
+
+That's all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.
+
+***
+
+<p style = "text-align:left;">[Previous, Week Two](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<span style = "float:right;">[Next, Read Chapter Two](https://www.tidytextmining.com/sentiment.html)</span>
+</p>

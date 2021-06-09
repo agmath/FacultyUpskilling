@@ -1,0 +1,227 @@
+---
+title: 'Chapter 2 Homework Assignment'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(rtweet)
+library(reshape2)
+library(wordcloud)
+library(gutenbergr)
+```
+
+**Note:** We wrote two *assignments* for this week. This assignment continues using texts from the Project Gutenberg library, however the second assignment is a tutorial for conducting sentiment analyses on recent tweets. Both assignments focus on sentiment analysis, but the text we analyse is quite different across the assignments -- you should feel free to do both assignments, or to just choose one. In order to access the Twitter Search API (required for the twitter sentiment tutorial), you'll either need an existing Twitter account or to create one. If you are opposed to creating a Twitter account, please feel free to skip that assignment.
+
+This homework assignment is intended as an opportunity to practice sentiment analysis, as introduced in Chapter 2 of [Text Mining with R, A Tidy Approach](https://www.tidytextmining.com/sentiment.html){target="_blank"}. We'll explore texts written by two very different authors (Charles Dickens and Edgar Rice Burroughs) in the Project Gutenberg library of texts.
+
+In order to complete this assignment you'll need to load the following libraries into an R Markdown document or an R Script: `gutenbergr`, `tidyverse`, `tidytext`, `reshape2`, and `wordcloud`.
+
+1. Recall from the Chapter 1 Homework assignment that we can filter the `gutenberg_metadata` data frame to consider only our author(s) of interest and then select the `gutenberg_id` and `title` columns to see what book ids we will need. Use the technique we saw there to identify the works of both `Dickens, Charles` and `Burroughs, Edgar Rice`.
+
+```{r, include = FALSE}
+gutenberg_metadata %>%
+  filter(str_detect(author, "Burroughs, Edgar Rice")) %>%
+  select(gutenberg_id, author, title)
+
+gutenberg_metadata %>%
+  filter(str_detect(author, "Dickens, Charles")) %>%
+  select(gutenberg_id, title)
+```
+
+Both of these authors wrote a lot -- Burroughs has 57 works in Project Gutenburg (some are duplicates), while Dickens has 164. Let's narrow this down a bit to so that we just include the [15 novels](https://www.charlesdickensinfo.com/novels/complete-works/){target="_blank"} Dickens wrote and the 5 books Burroughs wrote in his *Barsoom* series. The Gutenberg ids for Dickens' novels are 98, 580, 564, 730, 766, 700, 917, 968, 967, 1023, 1400, 963, 786, 821, 883. The Gutenberg ids for Burroughs' Barsoom series are 62, 64, 68, 72, and 1153.  
+
+2. Download these works and place them into objects called `dickens_novels` and `burroughs_barsoom_novels`. As a reminder, you can do this with the `gutenberg_download()` function whose first argument is a list of text ids and second argument is a mirror site to use for the download request -- we will use `mirror = "http://mirrors.xmission.com/gutenberg/"`. You can print out the head of each data frame if you would like confirmation that you have pulled the works correctly.
+
+```{r, include = FALSE}
+dickens_novels <- gutenberg_download(c(98, 580, 564, 730, 766, 700, 917, 968, 967, 1023, 1400, 963, 786, 821, 883), mirror = "http://mirrors.xmission.com/gutenberg/")
+
+burroughs_barsoom_novels <- gutenberg_download(c(62, 64, 68, 72, 1153), mirror = "http://mirrors.xmission.com/gutenberg/")
+
+dickens_novels %>% head()
+
+burroughs_barsoom_novels %>% head()
+```
+
+2. Now convert these into *tidy* data frames using `unnest_tokens()`. Remember that we will want to group by book (`gutenberg_id`), we may want to track line numbers or chapters like is shown in the textbook, and you can use informative names here by creating a new object with `tidy_` in the title. In general, if you are doing some chapter tracking, you will benefit by looking through the original text data frames we downloaded to see the structure of the new chapter indicators. The regular expression you write must catch these chapter indicators -- luckily the one we used earlier, `"^chapter [\\divxlc]"`, searches for lines beginning with (`^`) the word *chapter* followed by either a decimal digit (`\\d`) or a character representing a Roman Numeral. Remember to set the `ignore_case` argument to `TRUE`, and this regular expression will still work for all of these texts.
+
+```{r, include = FALSE}
+tidy_dickens <- dickens_novels %>%
+  group_by(gutenberg_id) %>%
+  mutate(linenumber = row_number(), 
+         chapter = cumsum(str_detect(text, 
+                                     regex("^chapter [\\divxlc]", 
+                                           ignore_case = TRUE)))) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+
+tidy_barsoom <- burroughs_barsoom_novels %>%
+  group_by(gutenberg_id) %>%
+  mutate(linenumber = row_number(), 
+         chapter = cumsum(str_detect(text, 
+                                     regex("^chapter [\\divxlc]", 
+                                           ignore_case = TRUE)))) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+
+tidy_dickens
+
+tidy_barsoom
+
+```
+
+3. Let's look at two different emotions from the `nrc` sentiment dictionary, `joy` and `fear` and see what the most common words each writer uses with these sentiments are. First, create the `nrc_joy` and `nrc_fear` objects by getting sentiments from the `"nrc"` dictionary, and filtering to include only the `"joy"` and `"fear"` sentiments respectively. Then use each of the tidy text data frames we built earlier, inner join them with your restricted sentiment dictionary, and get sorted word counts to identify the most common *joy* and *fear* words for each author (you'll run four separate blocks of code, once for each author and sentiment combination). Report your results as either a table or bar graph.
+
+```{r, include = FALSE}
+nrc_joy <- get_sentiments("nrc") %>%
+  filter(sentiment == "joy")
+
+nrc_fear <- get_sentiments("nrc") %>%
+  filter(sentiment == "fear")
+
+tidy_dickens %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE) %>%
+  slice(1:30) %>%
+  ggplot() +
+  geom_col(aes(x = reorder(word, n), y = n)) +
+  labs(x = "", y = "Count", title = "Most Common Joyful Words", subtitle = "Charles Dickens Novels") +
+  coord_flip()
+
+tidy_dickens %>%
+  inner_join(nrc_fear) %>%
+  count(word, sort = TRUE) %>%
+  slice(1:30) %>%
+  ggplot() +
+  geom_col(aes(x = reorder(word, n), y = n)) +
+  labs(x = "", y = "Count", title = "Most Common Fearful Words", subtitle = "Charles Dickens Novels") +
+  coord_flip()
+
+tidy_barsoom %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE) %>%
+  slice(1:30) %>%
+  ggplot() +
+  geom_col(aes(x = reorder(word, n), y = n)) +
+  labs(x = "", y = "Count", title = "Most Common Joyful Words", subtitle = "Barsoom Novels") +
+  coord_flip()
+
+tidy_barsoom %>%
+  inner_join(nrc_fear) %>%
+  count(word, sort = TRUE) %>%
+  slice(1:30) %>%
+  ggplot() +
+  geom_col(aes(x = reorder(word, n), y = n)) +
+  labs(x = "", y = "Count", title = "Most Common Fearful Words", subtitle = "Barsoom Novels") +
+  coord_flip()
+```
+
+We'll do some analysis on each book next. Currently our data frames list the numeric `gutenberg_id` but not a book title -- let's join book title onto our tidy data frames. The code below may be new to you -- a `left_join()` is similar to an inner join in that we are combining information from two tables. The difference here is that with a `left_join()` we start with the table on the left, and add information coming from the table on the right wherever matches exist (here, were `gutenberg_id`s match) -- with an `inner_join()`, if no match was found, the corresponding row in the initial table would be dropped from the resulting data frame. Also, notice that we aren't joining all of the information from the `gutenberg_metadata` data frame -- we are only including the `gutenberg_id` column (to make the matches) and the `title` column (the information we wanted to add). Ask any questions you have on Slack!
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+tidy_barsoom <- tidy_barsoom %>%
+  left_join(gutenberg_metadata %>% select(gutenberg_id, title))
+
+tidy_dickens <- tidy_dickens %>%
+  left_join(gutenberg_metadata %>% select(gutenberg_id, title))
+
+tidy_barsoom
+```
+
+Notice that now we have a new column for `title` in our data frame. 
+
+4. Let's see the wave of emotions that these authors take their readers through during the course of their novels. Similar to what was done in this week's reading, let's explore net sentiment for chunks of lines throughout each book. Start with chunks of 80 lines, as was done in the book, and then adjust this number to improve your insights. For example, 80 lines in the Barsoom books may be too long to get a reasonable picture of shifts in sentiment.
+
+```{r, include = FALSE}
+tidy_dickens %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(title, index = linenumber %/% 150, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
+  mutate(net_sentiment = positive - negative) %>%
+  ggplot() +
+  geom_col(aes(x = index, y = net_sentiment, fill = title), show.legend = FALSE) +
+  facet_wrap(~title, ncol = 3, scales = "free_x")
+
+tidy_barsoom %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(title, index = linenumber %/% 60, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
+  mutate(net_sentiment = positive - negative) %>%
+  ggplot() +
+  geom_col(aes(x = index, y = net_sentiment, fill = title), show.legend = FALSE) +
+  facet_wrap(~title, ncol = 2, scales = "free_x")
+```
+
+5. $\bigstar$**Challenge:** Burroughs' Barsoom series seems to be quite negative. See if you can produce a barplot displaying the most frequently occurring negative words for each of the books individually (use faceting).$\bigstar$
+
+```{r, fig.height = 8, include = FALSE}
+tidy_barsoom %>%
+  inner_join(get_sentiments("bing")) %>%
+  filter(sentiment == "negative") %>%
+  group_by(title) %>%
+  count(word, sort = TRUE) %>%
+  slice(1:15) %>%
+  mutate(word = reorder(word, n)) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_col(aes(x = word, y = n, fill = title), show.legend = FALSE) +
+  labs(x = "", y = "", title = "Most Common Negative Words", subtitle = "Barsoom Series") +
+  coord_flip() +
+  facet_wrap(~title, ncol = 2, scales = "free")
+```
+
+Now let's move to word clouds. 
+
+6. Create two word clouds, one corresponding to each author. Don't forget to filter out `stop_words`. Once you have a word cloud for each author, can you generate a separate word cloud for each individual text?
+
+```{r, fig.width = 6, fig.height = 6, include = FALSE}
+tidy_dickens %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 150, scale = c(4, 0.05)))
+
+tidy_barsoom %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100, scale = c(4, 0.05)))
+```
+
+7. Finally, generate a comparison cloud between a pair of sentiments of your choosing. You can either use the `bing` sentiment dictionary to construct a comparison a positive and negative tokens for each author, or use `nrc` and compare two different sentiments. Again, generate two word clouds, one for each author.
+
+```{r, fig.width = 8, fig.height = 8, include = FALSE}
+tidy_dickens %>%
+  inner_join(get_sentiments("nrc")) %>%
+  filter(sentiment %in% c("joy", "fear")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("gold", "purple"), max.words = 150)
+
+tidy_barsoom %>%
+  inner_join(get_sentiments("nrc")) %>%
+  filter(sentiment %in% c("joy", "fear")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("gold", "purple"), max.words = 150)
+```
+
+8. Recall that the `bing` and `nrc` sentiment dictionaries were validated on modern text (like Twitter). Are there words which have positive or negative connotations in their current usage but had a neutral connotation when these books were written? Try recreating the comparison clouds from the previous question with these words filtered out.
+
+## Final Thoughts
+
+Nice work. In completing this assignment you used a search technique to identify works by particular authors included in Project Gutenberg. You downloaded a selection of those works and conducted side-by-side sentiment analyses, comparing the selected works by each author. Even with just these first two Chapters behind us, we've gained some really useful tools for analysing the tone of a corpus as well as comparing authors or individual works. What we've done here is not only applicable to literature, either. We could do similar analyses on legal documents, emails, text messages, tweets, and more. Check out this week's last supplement to learn how to connect to the Twitter Search API and to pull/analyse recent tweets.
+
+ 
+
+***
+
+<p style = "text-align:left;">[Previous, Read Chapter 2 of Text Mining with R](https://www.tidytextmining.com/sentiment.html)
+<span style = "float:right;">[Next, Twitter Sentiment Tutorial](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_twitter_tutorial.html)</span>
+</p>
+

@@ -1,0 +1,46 @@
+---
+title: "Things to Know for Week 4 (Chapter 3)"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(tidytext)
+library(gutenbergr)
+library(janeaustenr)
+library(scales)
+library(wordcloud)
+library(reshape2)
+```
+
+Here are a few reminders and some things to be on the look-out for in Chapter 3.
+
+  + **MATH (tf-idf explained):** We encounter *tf-idf* this week as a way to measure the importance of a term to a document within a corpus. This metric comes in two pieces, *term frequency (tf)* and *inverse document frequency (idf)*. These two values are multiplied together for each token to obtain its *tf-idf* score.  
+    + The *term frequency* is just as it sounds -- the total number of times the term/token appears in the corpus. Higher term frequency indicates a greater level of term usage, and therefore greater importance.
+    + Just because a term is used often doesn't mean it is important though. This is the case with most *stop words*. For this reason, we compute *inverse document frequency (idf)*. We often compute 
+    $$idf\left(term\right) = \ln\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)$$  
+      + If we think about the value being passed to the logarithm here, we see that $\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}$ can take values 1 or larger. Indeed, if every document contained the term in question, we would obtain a value of 1. If the term is not contained in every document, then the bottom of the fraction will be smaller than the top of the fraction, resulting in a value greater than 1.
+      + Now, taking the logarithm of 1 results in 0. That is, if the term is contained in every single document, then that term cannot be of importance in distinguishing the documents within the corpus from one another.
+      + If the term in question appears in most (but not all) documents in our corpus, we will take the logarithm of a number slightly larger than 1, giving us a small positive value. Thus, this will down-weight the importance on the term according to its *tf-idf* score.
+      + The fewer the number of documents in the corpus that our term belongs to, the larger the value we will plug into the logarithm. This will result in a larger positive *idf* value, therefore inflating the *tf-idf* score. 
+      + Words appearing in more than about 36.8% of all documents will have their *tf-idf* score deflated due to their inverse document frequency (they'll have an *idf* less than 1), while terms appearing in less than 36.8% of all documents will have their *tf-idf* score inflated due to their inverse document frequency. For example, if our term appears in about 1 out of every 10 documents in the corpus, we will obtain an *idf* of about 2.3.
+    + As we mentioned, once we have the *term frequency (tf)* and *inverse document frequency (idf)*, we multiply these two values together to get the *tf-idf* score for the term.
+  
+  + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
+  
+  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `forcats`  
+    + This being said, you could simply use `reorder(word, tf_idf)` rather than `fct_reorder(word, tf_idf)` through this code block and bypass the need for `forcats` at all.
+  
+***
+
+That's all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.
+
+***
+
+<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
+</p>
