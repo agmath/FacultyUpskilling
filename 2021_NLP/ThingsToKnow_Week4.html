@@ -170,7 +170,7 @@ pre code {
 <li>The fewer the number of documents in the corpus that our term belongs to, the larger the value we will plug into the logarithm. This will result in a larger positive <em>idf</em> value, therefore inflating the <em>tf-idf</em> score.</li>
 <li>Words appearing in more than about 36.8% of all documents will have their <em>tf-idf</em> score deflated due to their inverse document frequency (they’ll have an <em>idf</em> less than 1), while terms appearing in less than 36.8% of all documents will have their <em>tf-idf</em> score inflated due to their inverse document frequency. For example, if our term appears in about 1 out of every 10 documents in the corpus, we will obtain an <em>idf</em> of about 2.3.</li>
 </ul></li>
-<li>As we mentioned, once we have the <em>term frequency (tf)</em> and <em>inverse document frequency (idf)</em>, we multiply these two values together to get the <em>tf-idf</em> score for the term.</li>
+<li>As we mentioned, once we have the <em>term frequency (tf)</em> and <em>inverse document frequency (idf)</em>, we multiply these two values together to get the <em>tf-idf</em> score for the term. That is, <span class="math display">\[tf\_idf(term) = n_{\text{term}}\cdot \ln\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)\]</span></li>
 </ul></li>
 <li><p><strong>REMINDER:</strong> The default mirror for <code>gutenberg_download()</code> is still non-functioning. Please continue using the mirror site you’ve been using up to this point.</p></li>
 <li><p><strong>NEW PACKAGES:</strong> The following packages are new this week and will need to be installed prior to use: <code>forcats</code></p>
@@ -182,7 +182,7 @@ pre code {
 <p>That’s all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.</p>
 <hr />
 <p style="text-align:left;">
-<a href="https://agmath.github.io/FacultyUpskilling/2021_NLP/">Previous, Week Three</a> <span style="float:right;"><a href="https://www.tidytextmining.com/tfidf.html">Next, Read Chapter Three</a></span>
+<a href="https://agmath.github.io/FacultyUpskilling/">Previous, Week Three</a> <span style="float:right;"><a href="https://www.tidytextmining.com/tfidf.html">Next, Read Chapter Three</a></span>
 </p>
 
 

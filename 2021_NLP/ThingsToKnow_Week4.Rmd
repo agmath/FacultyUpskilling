@@ -28,7 +28,8 @@ Here are a few reminders and some things to be on the look-out for in Chapter 3.
       + If the term in question appears in most (but not all) documents in our corpus, we will take the logarithm of a number slightly larger than 1, giving us a small positive value. Thus, this will down-weight the importance on the term according to its *tf-idf* score.
       + The fewer the number of documents in the corpus that our term belongs to, the larger the value we will plug into the logarithm. This will result in a larger positive *idf* value, therefore inflating the *tf-idf* score. 
       + Words appearing in more than about 36.8% of all documents will have their *tf-idf* score deflated due to their inverse document frequency (they'll have an *idf* less than 1), while terms appearing in less than 36.8% of all documents will have their *tf-idf* score inflated due to their inverse document frequency. For example, if our term appears in about 1 out of every 10 documents in the corpus, we will obtain an *idf* of about 2.3.
-    + As we mentioned, once we have the *term frequency (tf)* and *inverse document frequency (idf)*, we multiply these two values together to get the *tf-idf* score for the term.
+    + As we mentioned, once we have the *term frequency (tf)* and *inverse document frequency (idf)*, we multiply these two values together to get the *tf-idf* score for the term. That is,
+    $$tf\_idf(term) = n_{\text{term}}\cdot \ln\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)$$
   
   + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
   
@@ -41,6 +42,6 @@ That's all for now. Post questions you have in Slack and/or bring them with you 
 
 ***
 
-<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/)
 <span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
 </p>
