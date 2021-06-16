@@ -21,9 +21,13 @@ Here are a few reminders and some things to be on the look-out for in Chapter 4.
 
   + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
   
-  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `tm`, `topicmodels`, `quanteda`
+  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `tm`, `topicmodels`, `quanteda`, `Matrix`, <strike>`tm.plug.webmining` (you may need to [install Java](https://www.java.com/en/){target="_blank"})</strike> (see ERRORS bullet below)
+  
+  + **WARNING:** When creating `acq_tokens` you may get a warning message about Outer names only being allowed for unnamed scalar atomic inputs -- don't worry about this.
   
   + **NEW CODE:** Sometimes it isn't worth loading an entire package because we only need its functionality once or twice. In these cases, we can use the syntax `package_name::function_name()` to use the function `function_name()` from the package `package_name` without first loading `package_name` into our R Session.
+  
+  + **ERRORS:** When Google and Yahoo terminated the old versions of their finance pages in 2018, this broke the corresponding functions in the `tm.plugin.webmining` package. Unfortunately it looks like that package is no longer actively maintained, so the code in this section of the book won't run.
   
 
   

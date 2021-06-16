@@ -18,6 +18,11 @@ A repository of resources from faculty upskilling workshops.
     + <u>Assignments:</u> 
 	  + [Homework 3](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_homework.html) [(Solutions)](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_homework_answers.html)
 	  + [Sentiment Analysis with Twitter](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_2_twitter_tutorial.html)
+  + Week Four: Analyzing Word and Document Frequency, *tf-idf*
+    + [Heads Up](https://agmath.github.io/FacultyUpskilling/2021_NLP/ThingsToKnow_Week4.html)
+    + Work Through Chapter 3: [*Analyzing Word and Document Frequency: tf-idf*](https://www.tidytextmining.com/tfidf.html)
+    + <u>Assignments:</u> 
+	  + [Homework 4](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_3_homework.html) [(Solutions)](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_3_homework_answers.html)
 <hr>
 
 Built and maintained by [William Jamieson](https://www.williamtjamieson.com/) and [Adam Gilbert](https://sites.google.com/view/agilbertmath)

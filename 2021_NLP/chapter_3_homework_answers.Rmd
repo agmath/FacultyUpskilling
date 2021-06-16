@@ -1,0 +1,153 @@
+---
+title: 'Chapter 3 Homework Assignment (solutions)'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(tm)
+library(rtweet)
+library(reshape2)
+library(wordcloud)
+library(gutenbergr)
+```
+
+This homework assignment is intended as an opportunity to practice locating terms which are important in identifying individual texts from a corpus (via *tf-idf*), as introduced in Chapter 3 of [Text Mining with R, A Tidy Approach](https://www.tidytextmining.com/tfidf.html){target="_blank"}. We'll look at articles from a relatively famous dataset often referred to as [the *20 Newsgroups* dataset](http://www.cs.cmu.edu/afs/cs.cmu.edu/project/theo-20/www/data/news20.html){target="_blank"} and was first assembled by Ken Lang. Some of the code to create this week's visuals gets lengthy -- post in Slack if you have questions about any of it.
+
+In order to complete this assignment you'll need to load the following libraries into an R Markdown document or an R Script: `tidyverse`, `tidytext`, `tm`, and `wordcloud`.
+
+***
+
+1. After opening your Markdown or script file and loading the required libraries, let's load the newsgroups data. You can do this with the following code:
+    ```{r}
+    newsgroups <- read_csv("http://ssc.wisc.edu/~ahanna/20_newsgroups.csv")
+    glimpse(newsgroups)
+    ```
+
+2. Now that you have the dataset, conduct some initial exploration. What features (variables/columns) does the dataset contain? Can you determine what the contents of each column actually corresponds to? You may notice that we don't have all 20,000 of the messages from the original newsgroup dataset -- we have just over 11,000 of them.
+
+3. You may want to apply some of the techniques we learned in previous chapters to better understand each of the message boards. For example, we could build a wordcloud of the most common words appearing on message board 0 as follows:
+    ```{r, fig.width = 6, fig.height = 6}
+    newsgroups %>%
+      filter(target == 0) %>%
+      unnest_tokens(word, text) %>%
+      anti_join(stop_words) %>%
+      count(word, sort = TRUE) %>%
+      with(wordcloud(word, n, max.words = 150, scale = c(4, 0.05)))
+    ```  
+
+Looks like we found the *atheism* message board! Take some time to explore the others. You could generate word-clouds for each board very efficiently by making use of a `for` loop if you'd like, or you can generate them "by hand" if you change the `filter()` manually.
+
+4. Now that you've got a better idea of the contents of some of these message boards, let's see if we have *good* intuition about the most important words in identifying which message board a message was posted to. Before writing and running the code, make some guesses.  
+      + Start with the `newsgroups` dataset and tokeninze it with `unnest_tokens()`
+      + Since we are interested in comparing the message boards rather than the individual messages, drop the `X1` column.
+      + Group by the target column and then compute word counts within these groups.
+      + Use `bind_tf_idf()` on the `word`, `target`, and `n` columns to compute and attach the `tf_idf`-related variables.
+      + You may want to arrange the resulting data frame in decreasing order of `tf_idf` score, and use `slice_max()` to keep the top 10 or so tokens (according to `tf_idf` score, not count).
+      + You can now `ungroup()` the data frame and use `mutate()` to transform the `target` variable to a categorical variable (use `as.factor()`) and use `reorder_within(word, tf_idf, target)` to reorder the `word` variable by `tf_idf` score within each `target` grouping. 
+      + Now, use `ggplot()` and faceting as you've done in previous weeks to produce a barplot of the tokens with the largest `tf_idf` score within each message board. 
+      + Once you have the bar plots, interpret what you are seeing.
+    ```{r, fig.height = 20}
+    newsgroups %>%
+      unnest_tokens(word, text) %>%
+      select(-X1) %>%
+      group_by(target) %>%
+      count(word) %>%
+      bind_tf_idf(word, target, n) %>%
+      arrange(desc(tf_idf)) %>%
+      slice_max(tf_idf, n = 10) %>%
+      ungroup() %>%
+      mutate(target = as.factor(target), word = reorder_within(word, tf_idf, target)) %>%
+      ggplot() +
+      geom_col(aes(x = word, y = tf_idf, fill = target), show.legend = FALSE) +
+      scale_x_reordered() +
+      labs(x = "", y = "", title = "Highest `tf-idf`", subtitle = "Newsgroups Message Boards") +
+      coord_flip() +
+      facet_wrap(~target, ncol = 2, scales = "free")
+    ```
+    
+5. The `tf_idf` score depends on both the frequency of a token within the document (or document-group as we've forced here) in question but also whether or not that token is present within the other documents in the corpus. This means that the `tf_idf` scores and rankings will change if we consider a different corpus. For example, it looks like message boards 0, 15, and 19 all deal with some aspect of religion. Reproduce your plot analysis from above, but this time filter to include only these three message boards (*hint:* you can use either the `%in%` operator or a series of *or* `|` statements to help you). What happens to your results?
+    ```{r}
+    newsgroups %>%
+      filter(target %in% c(0, 15, 19)) %>%
+      unnest_tokens(word, text) %>%
+      select(-X1) %>%
+      group_by(target) %>%
+      count(word) %>%
+      bind_tf_idf(word, target, n) %>%
+      arrange(desc(tf_idf)) %>%
+      slice_max(tf_idf, n = 10) %>%
+      mutate(word = reorder(word, tf_idf)) %>%
+      ungroup() %>%
+      ggplot() +
+      geom_col(aes(x = word, y = tf_idf, fill = as.factor(target)), show.legend = FALSE) +
+      scale_x_reordered() +
+      labs(x = "", y = "", title = "Highest `tf-idf`", subtitle = "Newsgroups Message Boards") +
+      coord_flip() +
+      facet_wrap(~target, ncol = 2, scales = "free")
+    ```
+
+I hope you found that interesting. This is a great sneak peak into the challenges that come with applying machine learning algorithms to different datasets. In some scenarios model building is more challenging than others. Much of what we've been doing so far with our pursuit of NLP is *engineering features* from text (word counts, sentiment scores, ratios, and now `tf_idf` score). The hope is that these features give us insights into things we might care about -- the particular text, the author and their style -- in particular, we hope that these insights help us differentiate texts or authors from one another. When we explored `tf_idf` scores across all of the message boards in the corpus, it looked like the results were promising. At least the tokens for the message boards on automotives and motorcycles were quite different from those tokens most often associated with the message boards on sports. We gave ourselves a more difficult dataset once we increased the homogeneity of the topics discussed, by filtering down to only those message boards on topics adjacent to religion. It looks like the identities of the users who posted in each earned the highest `tf_idf` scores because the actual conversation content was so similar across the three boards. Leveraging the users to differentiate the boards provides much less insight than actually considering the content of the posts. It is worth noting, however, that we still would have had trouble taking a post with a religious slant and assigning it to the correct message board with the `tf_idf` information from the larger corpus though.
+
+### Zipf's Law
+
+Okay, one final thing before we go. This chapter also discussed an interesting phenomenon, called Zipf's Law. The *law* states that the relative frequency of a word within a document is typically proportional to the rank of that word (by frequency). Let's explore Zipf's Law and several works of Shakespeare. 
+
+6. In Project Gutenberg many of Shakespeare's plays are consecutively numbered, beginning with 2235 and extending through 2270. Let's pull the works 2242 through 2258 and work with those. While we are at it, let's join the title information onto the text data frame.
+
+```{r}
+some_shakespeare_plays <- gutenberg_download(seq(2242, 2258, by = 1), mirror = "http://mirrors.xmission.com/gutenberg/")
+
+some_shakespeare_plays <- some_shakespeare_plays %>%
+  left_join((gutenberg_metadata %>% select(gutenberg_id, title)))
+
+some_shakespeare_plays
+```
+
+7. Now let's explore Zipf's Law as was done in the textbook.  
+    + Create an object called `play_word_counts` by using `unnest_tokens()` and then counting by `title` and `word`. Remember to set `sort = TRUE` when you count (or use `arrange()` after you've counted).
+    + Create an object called `play_words_total` by starting with `play_word_counts`, then grouping by `title`, and using `summarize(total = sum(n))` as was done in the textbook.
+    + `left_join()` `play_words_total` onto `play_word_counts`. You can overwrite the `play_word_counts` object with this result.
+    + Create an object called `freq_by_rank` by starting with `play_word_counts`, group by `title`, then mutate two new columns `rank` equal to `row_number()` and then `term_frequency` equal to `n/total`, and then `ungroup()`.
+    + Now let's create the plot. Pipe `freq_by_rank` into `ggplot()` and build a `geom_line()` layer with the aesthetics `x = rank`, `y = term_frequency`, and `color = title`. You can also edit the `size` and `alpha` parameters as done in the book if you like. You'll want to set `show.legend = FALSE` as well. Finally, add the `scale_x_log10()` and `scale_y_log10()` layers.
+    
+    ```{r}
+    play_word_counts <- some_shakespeare_plays %>%
+      unnest_tokens(word, text) %>%
+      count(title, word, sort = TRUE)
+    
+    play_words_total <- play_word_counts %>%
+      group_by(title) %>%
+      summarize(total = sum(n))
+    
+    play_word_counts <- play_word_counts %>%
+      left_join(play_words_total)
+    
+    freq_by_rank <- play_word_counts %>%
+      group_by(title) %>%
+      mutate(rank = row_number(), term_frequency = n/total) %>%
+      ungroup()
+    
+    freq_by_rank %>%
+      ggplot() +
+      geom_line(aes(x = rank, y = term_frequency, color = title), show.legend = FALSE) +
+      scale_x_log10() +
+      scale_y_log10() +
+      labs(x = "Token Rank", y = "Token Rel. Frequency", title = "Zipf's Law", subtitle = "Several Shakespeare Plays")
+    ```
+
+I don't see any clear evidence in favor of the [authorship question](https://www.shakespeare.org.uk/explore-shakespeare/shakespedia/william-shakespeare/shakespeare-authorship-question/) -- at least through the lens of Zipf's Law. Maybe we can get David to discuss the origin of this question, some of the evidence, and whether there is a consensus within the community of Shakespearean Scholars!
+
+***
+
+<p style = "text-align:left;">[Previous, Read Chapter 3 tf-idf](https://www.tidytextmining.com/tfidf.html)
+<span style = "float:right;">[Next, Week Five](https://agmath.github.io/FacultyUpskilling/2021_NLP/)</span>
+</p>
+
