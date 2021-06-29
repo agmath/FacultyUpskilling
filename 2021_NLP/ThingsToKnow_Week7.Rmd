@@ -1,0 +1,42 @@
+---
+title: "Things to Know for Week 7 (Chapter 6)"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(tidytext)
+library(gutenbergr)
+library(janeaustenr)
+library(scales)
+library(wordcloud)
+library(reshape2)
+```
+
+Here are a few reminders and some things to be on the look-out for in Chapter 6.
+
+  + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
+  
+  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `topicmodels`
+  
+  + **WARNING:** When creating `acq_tokens` you may get a warning message about Outer names only being allowed for unnamed scalar atomic inputs -- don't worry about this.
+  
+  + **NEW CODE:** Sometimes it isn't worth loading an entire package because we only need its functionality once or twice. In these cases, we can use the syntax `package_name::function_name()` to use the function `function_name()` from the package `package_name` without first loading `package_name` into our R Session.
+  
+  + **ERRORS:** When Google and Yahoo terminated the old versions of their finance pages in 2018, this broke the corresponding functions in the `tm.plugin.webmining` package. Unfortunately it looks like that package is no longer actively maintained, so the code in this section of the book won't run.
+  
+
+  
+***
+
+That's all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.
+
+***
+
+<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
+</p>
