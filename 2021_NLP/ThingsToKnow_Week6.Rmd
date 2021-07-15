@@ -19,9 +19,9 @@ library(reshape2)
 
 Here are a few reminders and some things to be on the look-out for in Chapter 4.
 
-  + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
+  + **UPDATE:** The `gutenbergr` package has been updated so that the `gutenberg_download()` function searches for an active mirror site. This means that you won't need to manually define your `mirror` any longer.
   
-  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `tm`, `topicmodels`, `quanteda`, `Matrix`, <strike>`tm.plug.webmining` (you may need to [install Java](https://www.java.com/en/){target="_blank"})</strike> (see ERRORS bullet below)
+  + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `tm`, `topicmodels`, `quanteda`, `Matrix`, <strike>`tm.plugin.webmining` (you may need to [install Java](https://www.java.com/en/){target="_blank"})</strike> (see ERRORS bullet below)
   
   + **WARNING:** When creating `acq_tokens` you may get a warning message about Outer names only being allowed for unnamed scalar atomic inputs -- don't worry about this.
   

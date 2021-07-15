@@ -23,6 +23,11 @@ A repository of resources from faculty upskilling workshops.
     + Work Through Chapter 3: [*Analyzing Word and Document Frequency: tf-idf*](https://www.tidytextmining.com/tfidf.html)
     + <u>Assignments:</u> 
 	  + [Homework 4](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_3_homework.html) [(Solutions)](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_3_homework_answers.html)
+  + Week Five: Relationships Between Words, N-grams and Correlations
+	+ [Heads Up](https://agmath.github.io/FacultyUpskilling/2021_NLP/ThingsToKnow_Week5.html)
+	+ Work Through Chapter 4: [*Relationships Between Words, N-grams and Correlations*](https://www.tidytextmining.com/ngrams.html)
+	+ <u>Assignments:</u>
+	  + [Homework 5](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_4_homework.html) [Solutions](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_4_homework_answers.html)
 <hr>
 
 Built and maintained by [William Jamieson](https://www.williamtjamieson.com/) and [Adam Gilbert](https://sites.google.com/view/agilbertmath)

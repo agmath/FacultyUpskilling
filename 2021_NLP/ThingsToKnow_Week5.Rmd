@@ -19,7 +19,7 @@ library(reshape2)
 
 Here are a few reminders and some things to be on the look-out for in Chapter 4.
 
-  + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
+  + **REMINDER:** The default mirror for `gutenberg_download()` is now functioning. You don't need to manually set your mirror location any longer.
   
   + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `ggraph`, `igraph`, `widyr`
   
@@ -33,6 +33,6 @@ That's all for now. Post questions you have in Slack and/or bring them with you 
 
 ***
 
-<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
-<span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
+<p style = "text-align:left;">[Previous, Week Four](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<span style = "float:right;">[Next, Read Chapter Four](https://www.tidytextmining.com/ngrams.html)</span>
 </p>

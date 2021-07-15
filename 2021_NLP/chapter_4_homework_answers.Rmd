@@ -1,0 +1,176 @@
+---
+title: 'Chapter 4 Homework Assignment'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(widyr)
+library(igraph)
+library(ggraph)
+```
+
+This homework assignment is intended as an opportunity to practice working with *n-grams*, computing word-pair correlations, and visualizing co-occurrences via a graph structure.
+
+In order to complete this assignment you'll need to load the following libraries into an R Markdown document or an R Script: `tidyverse`, `tidytext`, `widyr`, `igraph`, `ggraph`.
+
+***
+
+This week let's work with text from *presidential speeches*, which you can find available [here](https://code.librehq.com/kfogel/presidential-speeches/-/tree/main/data). I've chosen several speeches given by Donald Trump between January and February 2020, including the following:  
+
++ A January 3, 2020 speech after the killing of Qasem Soleimani ([here](https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-01-03-remarks-killing-qasem-soleimani.txt))
++ A January 24, 2020 speech at the March for Life ([here](https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-01-24-speech-march-life.txt))
++ A February 4, 2020 State of the Union address ([here](https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-02-04-state-union-address.txt))
++ A February 6, 2020 speech after Trump's first impeachment acquittal ([here](https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-02-06-remarks-after-his-acquittal.txt))  
+
+You can feel free to explore others. When you click on the data source from the main page, make sure you collect the link to the *raw* text file (you can get there using the icon/button on the right of the page which looks like a document with the symbols `>_` on it).
+
+1. Open a new R script or R Markdown file (your choice), and load the following libraries: `tidyverse`, `tidytext`, `widyr`, `igraph`, and `ggraph`.
+
+2. We'll read in the data from the Trump speeches:  
+    ```{r message = FALSE, warning = FALSE}
+    soleimani <- read_delim("https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-01-03-remarks-killing-qasem-soleimani.txt", 
+                            delim = "\n", 
+                            col_names = "text", 
+                            skip = 1)
+    marchLife <- read_delim("https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-01-24-speech-march-life.txt", 
+                            delim = "\n", 
+                            col_names = "text", 
+                            skip = 1)
+    SoU_20 <- read_delim("https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-02-04-state-union-address.txt", 
+                         delim = "\n", 
+                         col_names = "text", 
+                         skip = 1)
+    acquittal <- read_delim("https://code.librehq.com/kfogel/presidential-speeches/-/raw/main/data/2020-02-06-remarks-after-his-acquittal.txt", 
+                            delim = "\n", 
+                            col_names = "text", 
+                            skip = 1)
+    ```  
+Note that the `delim = "\n"` argument says that delimeters here are "newlines", `col_names = "text"` says that we want our sole column to be called `text`, and `skip = 1` denotes that we would like to skip the first line, which reads "President: Donald Trump" in all cases.
+
+3. Let's add some information to each of our speech data frames. For each speech, we will add the context in which the speech was presented and line numbers. I'll do this for the `soleimani` speech and you'll mimic the code to do the same for the other three speeches (or the speeches you've decided to work with).
+    ```{r}
+    soleimani <- soleimani %>%
+      mutate(speech = "Soleimani",
+             linenumber = row_number())
+    
+    marchLife <- marchLife %>%
+      mutate(speech = "March for Life",
+             linenumber = row_number())
+    
+    SoU_20 <- SoU_20 %>%
+      mutate(speech = "State of the Union 2020",
+             linenumber = row_number())
+    
+    acquittal <- acquittal %>%
+      mutate(speech = "First Impeachment Acquittal",
+             linenumber = row_number())
+    ```
+    
+4. Let's now stack the separate data frames into a single data frame. We can do this because we've added the `speech` column, so that we are still able to track which lines are from which speeches. You can use the `bind_rows()` function and pass the four individual speech data frames as arguments to it. Store your result in a new data frame called `speeches`.  
+    ```{r}
+    speeches <- bind_rows(acquittal, marchLife, soleimani, SoU_20)
+    ```
+
+5. Now that we have a data frame containing the text from all four speeches, let's tokenize into bigrams within each speech and then filter out any stopwords we encounter.  
+    + Start with the `speeches` data frame.
+    + `group_by` the `speech` columns.
+    + Use `unnest_tokens()` to extract *bigrams* from the `text` column.
+    + Separate the resulting bigram column into two columns, one for each word composing the bigram.
+    + Filter out any rows for which either of the words is a stop word (that is, the word is in `stop_words$word`) -- you may also want to add your own stop words such as *audience*, *applause*, *laughter*, etc.
+    + Count the remaining bigrams and sort the result so that you can see the most frequent bigrams.
+    + Store the resulting data frame in a new object called `speeches_bigram_counts`.  
+    ```{r}
+    speeches_bigram_counts <- speeches %>%
+      group_by(speech) %>%
+      unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+      separate(bigram, c("word1", "word2"), sep = " ") %>%
+      filter(!(word1 %in% c(stop_words$word, "audience", "applause", "laughter"))) %>%
+      filter(!(word2 %in% c(stop_words$word, "audience", "applause", "laughter"))) %>%
+      count(word1, word2, sort = TRUE) %>%
+      ungroup()
+    ```
+
+6. Alright, now that we have these bigrams, let's see if we can visualize each speech via a graph. I'll show how we can do this with the speech from the March for Life rally. See if you can adapt the code to visualize the other three speeches.
+    ```{r}
+    marchForLife_graph <- speeches_bigram_counts %>%
+      filter(str_detect(speech, "March")) %>%
+      select(word1, word2, n) %>%
+      filter(n > 1) %>%
+      graph_from_data_frame()
+
+    ggraph(marchForLife_graph, layout = "fr") +
+      geom_edge_link(aes(edge_alpha = n), show.legend = FALSE) +
+      geom_node_point(color = "lightblue", size = 5) + 
+      geom_node_text(aes(label = name), vjust = 1, hjust = 1) + 
+      theme_void()
+    ```
+
+8. Let's now look at the entire corpus of these four Trump speeches (as if it were one document). We'll look for correlations and then build a plot. This will happen in three steps, first we will build an object called `speeches_by_sentence` which tokenizes each sentence of each speech, second we will build an object called `word_cors` which computes the within-sentence correlation of word pairs, and third we will construct a plot of correlated words.   
+    + Create `speeches_by_sentence`  
+      + Start with the `speeches` data frame.
+      + Group by the `speech` variable.
+      + Use `unnest_tokens()` to tokenize by sentence -- you'll need to pass the parameter `token = "sentence"` for this.
+      + Use the `mutate()` function to create a `sentence_number` variable, using `row_number()`.
+      + Now group by both `speech` and `sentence_number`.
+      + Use `unnest_tokens()` once more to tokenize the words in each sentence.
+      + Ungroup your data frame.
+      + Filter the resulting data frame so that none of the words are in our list of stopwords (check back on how you did this earlier if you forgot).
+      + Store the resulting data frame in an object called `speeches_by_sentence`.
+    + Create `word_cors`  
+      + Start with your newly created `speeches_by_sentence` data frame.
+      + Group by the `word` variable.
+      + Filter to include only words with counts greater than 10 occurrences. You haven't actually taken the step to compute word counts, so you'll need to filter according to the criteria `n() >= 10` -- the `n()` here tells R to compute the counts.
+      + Use the `pairwise_cor()` function, passing it the arguments `word`, `sentence_number`, and `sort = TRUE` to compute the within-sentence word correlations.
+      + Store the resulting data frame in an object called `word_cors`.  
+    + Build your plot (see our earlier plot if you need help)  
+      + Start with the `word_cors` object you just created.
+      + Filter to include only word-pairs with `correlation` at least 0.15.
+      + Use the `graph_from_data_fram()` function to create a graph object.
+      + Initialize a graph with `ggraph(layout = "fr")`.
+      + Add a `geom_edge_link()` layer with the *aesthetic* `edges_alpha = correlation`, and set the parameter `show.legend` to `FALSE`.
+      + Add a `geom_node_point()` layer and set the node `color` to `"lightblue"`, and `size` to `5`.
+      + Add a `geom_node_text()` layer with the *aesthetic* `label = name`, and set `repel = TRUE` to avoid label overlaps.
+      + Add the layer `theme_void()` with no arguments to produce the graph on top of a plain white background.
+    ```{r message = FALSE, warning = FALSE}
+    speeches_by_sentence <- speeches %>%
+      group_by(speech) %>%
+      unnest_tokens(sentence, text, token = "sentences") %>%
+      mutate(sentence_number = row_number()) %>%
+      group_by(speech, sentence_number) %>%
+      unnest_tokens(word, sentence, token = "words") %>%
+      ungroup() %>%
+      filter(!(word %in% c(stop_words$word, "applause", "laughter")))
+    
+    word_cors <- speeches_by_sentence %>%
+      group_by(word) %>%
+      filter(n() >= 10) %>%
+      pairwise_cor(word, sentence_number, sort = TRUE)
+    
+    word_cors %>%
+      filter(correlation > 0.15) %>%
+      graph_from_data_frame() %>%
+      ggraph(layout = "fr") +
+      geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
+      geom_node_point(color = "lightblue", size = 5) +
+      geom_node_text(aes(label = name), repel = TRUE) +
+      theme_void()
+    ```
+
+***
+
+**Recap:** In this assignment we looked at word co-occurrences and correlations. This gave us a bit more insight into the context in which words appeared. Additionally, we saw how we can use graph structures to model topics which are discussed within a corpus. In that last plot of correlated words within sentences in Trump's speeches, we can see some components of the graph which are specific to each individual speech. We can also identify a connected mass, however, indicating themes which span (or at least serve to connect) the four separate Trump speeches. We could engage in a similar analysis using all of the speeches Trump gave while in office. The large connected mass in the resulting topic graph would give us insight into Trump's core policy interests, as they would pervade through most of his speaking engagements. I hope you found this assignment interesting!
+
+***
+
+<p style = "text-align:left;">[Previous, Read Chapter 4](https://www.tidytextmining.com/ngrams.html)
+<span style = "float:right;">[Next, Week Six](https://agmath.github.io/FacultyUpskilling/)</span>
+</p>
+

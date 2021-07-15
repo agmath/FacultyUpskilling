@@ -159,7 +159,7 @@ pre code {
 
 <p>Here are a few reminders and some things to be on the look-out for in Chapter 4.</p>
 <ul>
-<li><p><strong>REMINDER:</strong> The default mirror for <code>gutenberg_download()</code> is still non-functioning. Please continue using the mirror site you’ve been using up to this point.</p></li>
+<li><p><strong>REMINDER:</strong> The default mirror for <code>gutenberg_download()</code> is now functioning. You don’t need to manually set your mirror location any longer.</p></li>
 <li><p><strong>NEW PACKAGES:</strong> The following packages are new this week and will need to be installed prior to use: <code>ggraph</code>, <code>igraph</code>, <code>widyr</code></p></li>
 <li><p><strong>PROGRAMMING TECHNIQUES:</strong> When we expect to perform analyses multiple times, on different texts but where the steps will be the same, it makes sense to write our analysis into a function that can just be called any time we want to perform the corresponding analysis. Functions are sets of instructions that can be called and run over and over again on different (but similarly structured) objects. You’ll be exposed to writing functions in this chapter.</p></li>
 <li><p><strong>AN ERROR I ENCOUNTERED:</strong> The <code>graph_from_data_frame()</code> function in the <code>igraph</code> package requires a data frame with at least two columns. For a given row, the tokens in these first two columns are interpreted as the endpoints of the edge represented by that row. Any additional columns can contain attributes for that edge (for example, a weight as in the textbook). If you have trouble generating the graphs in the textbook, take a look at the data frame you are feeding the <code>graph_from_data_frame()</code> function – it should have three columns, <code>word1</code>, <code>word2</code>, and <code>n</code> – if you used the <code>unite()</code> function to bring your bigrams back to a single column, then you’ll only have two columns and you won’t be able to generate the graph(s).</p></li>
@@ -168,7 +168,7 @@ pre code {
 <p>That’s all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.</p>
 <hr />
 <p style="text-align:left;">
-<a href="https://agmath.github.io/FacultyUpskilling/2021_NLP/">Previous, Week Three</a> <span style="float:right;"><a href="https://www.tidytextmining.com/tfidf.html">Next, Read Chapter Three</a></span>
+<a href="https://agmath.github.io/FacultyUpskilling/2021_NLP/">Previous, Week Four</a> <span style="float:right;"><a href="https://www.tidytextmining.com/ngrams.html">Next, Read Chapter Four</a></span>
 </p>
 
 
