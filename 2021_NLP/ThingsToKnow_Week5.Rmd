@@ -33,6 +33,6 @@ That's all for now. Post questions you have in Slack and/or bring them with you 
 
 ***
 
-<p style = "text-align:left;">[Previous, Week Four](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
+<p style = "text-align:left;">[Previous, Week Four](https://agmath.github.io/FacultyUpskilling/)
 <span style = "float:right;">[Next, Read Chapter Four](https://www.tidytextmining.com/ngrams.html)</span>
 </p>

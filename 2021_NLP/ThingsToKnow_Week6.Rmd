@@ -17,7 +17,7 @@ library(wordcloud)
 library(reshape2)
 ```
 
-Here are a few reminders and some things to be on the look-out for in Chapter 4.
+Here are a few reminders and some things to be on the look-out for in Chapter 5.
 
   + **UPDATE:** The `gutenbergr` package has been updated so that the `gutenberg_download()` function searches for an active mirror site. This means that you won't need to manually define your `mirror` any longer.
   
@@ -29,14 +29,12 @@ Here are a few reminders and some things to be on the look-out for in Chapter 4.
   
   + **ERRORS:** When Google and Yahoo terminated the old versions of their finance pages in 2018, this broke the corresponding functions in the `tm.plugin.webmining` package. Unfortunately it looks like that package is no longer actively maintained, so the code in this section of the book won't run.
   
-
-  
 ***
 
 That's all for now. Post questions you have in Slack and/or bring them with you to our Thursday live meeting.
 
 ***
 
-<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/2021_NLP/)
-<span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
+<p style = "text-align:left;">[Previous, Week Five](https://agmath.github.io/FacultyUpskilling/)
+<span style = "float:right;">[Next, Read Chapter Five](https://www.tidytextmining.com/dtm.html)</span>
 </p>
