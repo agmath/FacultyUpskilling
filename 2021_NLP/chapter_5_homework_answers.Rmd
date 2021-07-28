@@ -1,0 +1,42 @@
+---
+title: 'Chapter 5 Homework Assignment'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(widyr)
+library(igraph)
+library(ggraph)
+```
+
+This homework assignment is intended as an opportunity to practice working with converting between tidy and non-tidy formats for text data. As a reminder, the *tidy* format is very useful for EDA and data visualization, but it not the shape expected for machine learning algorithms. It is often the case where we want to predict genre, authorship, recommend titles, etc. -- it these cases, the document-term matrix can be a more appropriate representation of our text data. This is because, in all of these scenarios, the observation is not the particular token, it is the full-text which we wish to classify or recommend.
+
+In order to complete this assignment you'll need to load the following libraries into an R Markdown document or an R Script: `tidyverse`, `tidytext`, [NEED TO ADD].
+
+***
+
+This week we will work with movie descriptions, each labeled by their primary genres. We'll start with an exploratory analysis and do some comparison of *tidy* and *untidy* organizations of our data. Finally, we'll look at why we may want (or need) untidy representations of our data in order to perform a predictive task. We'll try training a machine learning model to predict the primary genre corresponding to our movie descriptions. Once we have a trained model, we will see how that model performs on previously unseen movie descriptions. I've set aside an unlabeled set of movie descriptions for us to use, and I've also saved the primary genres corresponding to those descriptions in a separate file. This way we can see how well our model performs. 
+
+***
+
+1. Open up a new R Script or RMarkdown file and load the `tidyverse` and `tidytext` libraries.
+
+2. You'll read in the data from our GitHub Repo using the following commands:  
+    ```{r}
+    train_descriptions <- read_csv("")
+    ```
+
+***
+
+<p style = "text-align:left;">[Previous, Read Chapter 5](https://www.tidytextmining.com/dtm.html)
+<span style = "float:right;">[Next, Week Six](https://agmath.github.io/FacultyUpskilling/)</span>
+</p>
+
