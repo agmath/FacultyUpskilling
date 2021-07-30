@@ -57,6 +57,6 @@ That's all for now. Post questions you have in Slack and/or bring them with you 
 
 ***
 
-<p style = "text-align:left;">[Previous, Week Three](https://agmath.github.io/FacultyUpskilling/)
-<span style = "float:right;">[Next, Read Chapter Three](https://www.tidytextmining.com/tfidf.html)</span>
+<p style = "text-align:left;">[Previous, Read Chapter Five](https://www.tidytextmining.com/dtm.html)
+<span style = "float:right;">[Next, Read Chapter Six](https://www.tidytextmining.com/topicmodeling.html)</span>
 </p>
