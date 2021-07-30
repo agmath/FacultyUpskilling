@@ -137,6 +137,6 @@ In any case, I hope you found this assignment fun and that it showed you a bit a
 ***
 
 <p style = "text-align:left;">[Previous, Read Chapter 6](https://www.tidytextmining.com/topicmodeling.html)
-<span style = "float:right;">[Next, Epilogue](https://agmath.github.io/FacultyUpskilling/)</span>
+<span style = "float:right;">[Next, Epilogue](https://agmath.github.io/FacultyUpskilling/2021_NLP/epilogue.html)</span>
 </p>
 
