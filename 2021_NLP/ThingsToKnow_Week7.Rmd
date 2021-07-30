@@ -19,17 +19,37 @@ library(reshape2)
 
 Here are a few reminders and some things to be on the look-out for in Chapter 6.
 
-  + **REMINDER:** The default mirror for `gutenberg_download()` is still non-functioning. Please continue using the mirror site you've been using up to this point.
-  
   + **NEW PACKAGES:** The following packages are new this week and will need to be installed prior to use: `topicmodels`
-  
-  + **WARNING:** When creating `acq_tokens` you may get a warning message about Outer names only being allowed for unnamed scalar atomic inputs -- don't worry about this.
-  
-  + **NEW CODE:** Sometimes it isn't worth loading an entire package because we only need its functionality once or twice. In these cases, we can use the syntax `package_name::function_name()` to use the function `function_name()` from the package `package_name` without first loading `package_name` into our R Session.
-  
-  + **ERRORS:** When Google and Yahoo terminated the old versions of their finance pages in 2018, this broke the corresponding functions in the `tm.plugin.webmining` package. Unfortunately it looks like that package is no longer actively maintained, so the code in this section of the book won't run.
-  
+  + **GREAT LIBRARY HEIST:** I had some trouble with the *Pride and Prejudice* text. This book, from Project Gutenberg includes a table of contents, and leading whitespaces in the text column. Here's how I got around the issue.  
+    ```{r, echo = TRUE, eval = FALSE}
+    #Read in the thre other texts
+    titles <- c("Twenty Thousand Leagues under the Sea",
+            "The War of the Worlds",
+            "Great Expectations")
 
+    books <- gutenberg_works(title %in% titles) %>%
+      gutenberg_download(meta_fields = "title", mirror = "http://mirrors.xmission.com/gutenberg/")
+    
+    #Read in Pride and Prejudice separately
+    pride <- gutenberg_download(gutenberg_id = 1342)
+    
+    #Add in the title column -- rep() stands for repeat, so we are just making
+    #a column of the appropriate length here.
+    pride$title <- rep("Pride and Prejudice", nrow(pride))
+    
+    #Cut out the rows corresponding to the table of contents.
+    pride <- pride[c(1:12, 139:nrow(pride)), ]
+    
+    #Remove the leading whitespace in the text column -- we'll *apply* the
+    #trimws function to every cell in the text column of our
+    #pride data frame. The result of lapply() is a list, so we will just
+    #unlist() the result to get back to a simple string value. (There are
+    #probably beter ways to do this).
+    pride$text <- unlist(lapply(pride$text, trimws))
+    
+    #Combine the original three books with the Pride and Prejudice text.
+    books <- bind_rows(books, pride)
+    ```
   
 ***
 

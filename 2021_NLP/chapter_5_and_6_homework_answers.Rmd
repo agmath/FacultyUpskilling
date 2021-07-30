@@ -33,21 +33,21 @@ This week we will work with movie descriptions, each labeled by their primary ge
     movies
     ```
 
-3. Now that we have our data, let's use our familiar workflow of *unnest*ing tokens to create a *tidy* version of our data frame. We'll use `unnest_tokens()` to unnest the `overview` column.
+3. Now that we have our data, let's use our familiar workflow of *unnest*ing tokens to create a *tidy* version of our data frame. Use `unnest_tokens()` to unnest the `overview` column.
     ```{r}
     movies_tidy <- movies %>%
       unnest_tokens(word, overview)
     movies_tidy
     ```
 
-4. You can see that the resulting data frame looks quite familiar. We are repeating the the `genre` and `movie_id` and has a column containing each individual word from each review. This is our familiar *tidy text data frame*. Let's do something we've done before and remove `stop_words` by using an `anti_join()`. You can overwrite your `movies_tidy` data frame here.  
+4. You can see that the resulting data frame looks quite familiar. We have columns tracking the `genre` and `movie_id` and built a column containing each individual word from each review. This is our familiar *tidy text data frame*. Let's do something we've done before and remove `stop_words` by using an `anti_join()`. You can overwrite your `movies_tidy` data frame here.  
     ```{r}
     movies_tidy <- movies_tidy %>%
       anti_join(stop_words)
     movies_tidy
     ```
 
-5. That cut over 120,000 rows of very common words from our data frame. Now let's build a new data frame that includes word counts for each word within each movie description. Call your new object `movies_word_count`, start with `movies_tidy`, group by `movie_id`, count the `word` occurrences, and then `ungroup()`.    
+5. That cut over 120,000 rows of very common words from our data frame. This can be an important step because it will reduce the number of columns present in a document-term-matrix when we construct one. Now let's build a new data frame that includes word counts for each word within each movie description. Call your new object `movies_word_count`, start with `movies_tidy`, group by `movie_id`, count the `word` occurrences, and then `ungroup()`.    
     ```{r}
     movies_word_count <- movies_tidy %>%
       group_by(movie_id) %>%
@@ -56,19 +56,19 @@ This week we will work with movie descriptions, each labeled by their primary ge
     movies_word_count
     ```
 
-6. Now let's `cast` our *tidy data frame* as a *Document Term Matrix*, which is a sparse matrix (contains mostly 0's) in which each row corresponds to a movie description and each column corresponds to a word present in our corpus of reviews. The entries of this matrix will denote the number of times the word corresponding to the column appears in the description corresponding to the row. Call your new object `movies_dtm` and create it using the `cast_dtm()` function.  
+6. Now let's `cast` our *tidy data frame* as a *Document Term Matrix*, which is a sparse matrix (meaning that it contains mostly 0's) in which each row corresponds to a movie description and each column corresponds to a word present in our corpus of reviews. The entries of this matrix will denote the number of times the word corresponding to the column appears in the description corresponding to the row. Call your new object `movies_dtm` and create it using the `cast_dtm()` function.  
     ```{r}
     movies_dtm <- movies_word_count %>%
       cast_dtm(movie_id, word, n)
     movies_dtm
     ```
 
-7. Notice that R won't print out the sparse matrix for us even if we ask for it by name. Instead, we are provided some information about the object. In particular, we can see that our matrix is almost 100% sparse, there are only 100,721 non-zero entries among the over 87 Million entries in the matrix. If you would like to see the terms represented by the first ten columns in our document-term matrix, you can do so by running `Terms(movies_dtm)[1:10]`. Try it and change the indices to see terms represented by other columns as well.  
+7. Notice that R won't print out the sparse matrix for us even if we ask for it by name. Instead, we are provided some information about the object. In particular, we can see that our matrix is almost 100% sparse, there are only 100,721 non-zero entries among the over 87 Million entries in the matrix. If you would like to see the terms represented by the first ten columns in our document-term matrix, you can do so by running `Terms(movies_dtm)[1:10]`. Try it. Change the indices to see terms represented by other columns as well.  
     ```{r}
     Terms(movies_dtm)[1000:1020]
     ```
 
-8. Okay, now that we've got our data into a format where every row represents a movie description and every column represents a feature of that movie description (ie. a word it contains), we are in a scenario where we can try building a topic model using the `LDA()` function from R's `topicmodels` package. As a reminder, when we began, we knew the primary genre of each movie in this dataset of descriptions. There are 20 primary genres present in our movie descriptions dataset, which you can verify by running `length(unique(movies$genre))`. Use `LDA()` on our document-term-matrix representing the movie descriptions and use 20 topics -- it may take about five minutes or so to run. Sore the result in `movies_lda`.  
+8. Okay, now that we've got our data into a format where every row represents a movie description and every column represents a feature of that movie description (ie. a word it contains), we are in a scenario where we can try building a topic model using the `LDA()` function from R's `topicmodels` package. As a reminder, when we began, we knew the primary genre of each movie in this dataset of descriptions. There are 20 primary genres present in our movie descriptions dataset, which you can verify by running `length(unique(movies$genre))`. Use `LDA()` on our document-term-matrix representing the movie descriptions and use 20 topics -- it may take about five minutes or so to run. Be sure to store the result in `movies_lda`.  
     ```{r}
     movies_lda <- LDA(movies_dtm, k = 20, control = list(seed = 1337))
     movies_lda
@@ -82,7 +82,7 @@ This week we will work with movie descriptions, each labeled by their primary ge
       pivot_wider(names_from = topic, values_from = beta)
     ```
 
-10. Similar to what is done in the text, let's use `slice_max()` to find the 10 terms from each topic, which are most surely associated with that topic. Adapt the code from the textbook to produce a faceted set of plots showing your results.  
+10. Similar to what is done in the text, let's use `slice_max()` to find the 10 terms from each topic, which are most surely associated with that topic. Adapt the code from the textbook to produce a faceted set of plots showing your results.  If you are working in R Markdown, you may want to set the `fig.height` chunk parameter to something like 20 -- you set your chunk arguments within the curly braces at the beginning of an R chunk.  
     ```{r, fig.height = 20}
     movies_top_terms <- movie_genre_est %>%
       group_by(topic) %>%
@@ -98,17 +98,18 @@ This week we will work with movie descriptions, each labeled by their primary ge
       scale_y_reordered()
     ```
 
-11. After seeing your plot panel, do you think LDA learned topics based on the film genres? Let's see which topic each film was assigned to using `tidy()` again, but setting the matrix argument to `"gamma"`. Store your result in an object called `movie_assignments`. View the result.  
+11. After seeing your plot panel, do you think LDA learned topics based on the film genres? Let's see which topic each film was assigned to using `tidy()` again, but setting the `matrix` argument to `"gamma"`. Store your result in an object called `movie_assignments`. View the result.  
     ```{r}
     movie_assignments <- tidy(movies_lda, matrix = "gamma")
     movie_assignments
     ```
 
-12. Let's try to extract the topic each movie has been assigned to by adapting our code from 10. We still want to use `slice_max()` here, but let's group by `document` and then take only the row corresponding to the top `gamma` value. The `document` column will be converted to a *string* by default, so you'll want to use `mutate()` and `as.numeric()` to convert this column back to a numeric column. Store your result in `movie_assignment`.  
+12. Let's try to extract the topic each movie has been assigned to by adapting our code from 10. We still want to use `slice_max()` here, but let's group by `document` and then take only the row corresponding to the top `gamma` value. After slicing, don't forget to `ungroup()` the data frame. The `document` column will be converted to a *string* by default, so you'll want to use `mutate()` and `as.numeric()` to convert this column back to a numeric column. Store your result in `movie_assignment`.  
     ```{r}
     movie_assignment <- movie_assignments %>%
       group_by(document) %>%
       slice_max(gamma, n = 1) %>%
+      ungroup() %>%
       mutate(document = as.numeric(document)) %>%
       arrange(document)
     movie_assignment
@@ -119,7 +120,8 @@ This week we will work with movie descriptions, each labeled by their primary ge
     + Now that you have both the known primary `genre` and the assigned `topic` contained in the `movie_assignment` data frame, follow and adapt the code from the book to create the tile plot representing the confusion matrix.
     ```{r}
     movie_assignment <- movie_assignment %>%
-      left_join((movies %>% select(movie_id, genre)), by = c("document" = "movie_id"))
+      left_join(movies, by = c("document" = "movie_id"))
+    movie_assignment
     movie_assignment %>%
       count(across(c(topic, genre))) %>%
       group_by(genre) %>%
@@ -133,7 +135,15 @@ This week we will work with movie descriptions, each labeled by their primary ge
 
 ***
 
-**Final Thoughts:** It looks like our model didn't choose its topics according to the primary genre. The majority of foreign films and made for TV movies were split across very few topics, but films from the other genres were shared widely across the 20 topics learned by our LDA model. There are a few reasons for this. First, as we saw in the barplots for each topic, the model learned storylines and settings rather than genres. Secondly, in the original dataset, most films were assigned several genre tags, so genres can overlap quite a bit. In any case, I hope you found this assignment fun and that it showed you a bit about why untidy formats are sometimes preferred over tidy data. Additionally, I hope you'll consider applying topic models to different contexts!
+**Final Thoughts:** It looks like our model didn't choose its topics according to the primary genre. The foreign films and made for TV movies were each split across very few topics, but films from the other genres were shared widely across the 20 topics learned by our LDA model. There are a few reasons for this. First, as we saw in the barplots for each topic, the model learned storylines and settings rather than genres. Secondly, in the original dataset, most films were assigned several genre tags, so genres can overlap quite a bit and my choice to assume that the first genre listed was the *primary genre* may have been a poor one. If you want to dig a bit deeper into how our topic model grouped movies, you can run code blocks similar to the one appearing below:
+
+```{r}
+movie_assignment %>%
+  filter(topic == 1) %>%
+  select(genre, overview)
+```
+
+In any case, I hope you found this assignment fun and that it showed you a bit about why untidy formats are sometimes preferred over tidy data. Additionally, I hope you'll consider applying topic models to different contexts!
 
 ***
 

@@ -1,0 +1,142 @@
+---
+title: 'Chapter 5 and 6 Homework Assignment'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(tm)
+library(topicmodels)
+```
+
+This homework assignment is intended as an opportunity to practice working with converting between tidy and non-tidy formats for text data and also for using the non-tidy formats as input for modeling functionality. As a reminder, the *tidy* format is very useful for EDA and data visualization, but it not the shape expected for machine learning algorithms. It is often the case where we want to predict genre, authorship, recommend titles, etc. -- it these cases, the document-term matrix can be a more appropriate representation of our text data. This is because, in all of these scenarios, the observation is not the particular token, it is the full-text which we wish to classify or recommend.
+
+This week we will work with movie descriptions, each labeled by their primary genres. We'll start with an exploratory analysis and do some comparison of *tidy* and *untidy* organizations of our data. Next we'll use what was covered in Chapter 6 to create a topic model based on the movie descriptions. We will see how well these models correspond to the primary genres for our movies.
+
+***
+
+1. Open up a new R Script or RMarkdown file and load the `tidyverse`, `tidytext`, `tm`, and `topicmodels` libraries. Remember to install any packages you've never used before by running `install.packages("PACKAGE_NAME")`.
+
+2. You'll read in the labeled data from our GitHub Repo using the following commands. Note that `mutate()` is adding a new column called `movie_id` and `select()` is just reordering the columns.  
+    ```{r, message = FALSE, warnings = FALSE}
+    movies <- read_csv("https://raw.githubusercontent.com/agmath/FacultyUpskilling/main/2021_NLP/data/train.csv")
+    movies <- movies %>%
+      mutate(movie_id = row_number()) %>%
+      select(movie_id, genre, overview)
+    ```
+
+3. Now that we have our data, let's use our familiar workflow of *unnest*ing tokens to create a *tidy* version of our data frame. Use `unnest_tokens()` to unnest the `overview` column.
+    ```{r, echo = FALSE, eval = FALSE}
+    movies_tidy <- movies %>%
+      unnest_tokens(word, overview)
+    ```
+
+4. You should see that the resulting data frame looks quite familiar. We have columns tracking the `genre` and `movie_id` and built a column containing each individual word from each review. This is our familiar *tidy text data frame*. Let's do something we've done before and remove `stop_words` by using an `anti_join()`. You can overwrite your `movies_tidy` data frame here.  
+    ```{r, echo = FALSE, eval = FALSE}
+    movies_tidy <- movies_tidy %>%
+      anti_join(stop_words)
+    ```
+
+5. That step cut over 120,000 rows of very common words from our data frame. This can be an important step because it will reduce the number of columns present in a document-term-matrix when we construct one. Now let's build a new data frame that includes word counts for each word within each movie description. Call your new object `movies_word_count`, start with `movies_tidy`, group by `movie_id`, count the `word` occurrences, and then `ungroup()`.    
+    ```{r, echo = FALSE, eval = FALSE}
+    movies_word_count <- movies_tidy %>%
+      group_by(movie_id) %>%
+      count(word) %>%
+      ungroup()
+    ```
+
+6. Now let's `cast` our *tidy data frame* as a *Document Term Matrix*, which is a sparse matrix (meaning that it contains mostly 0's) in which each row corresponds to a movie description and each column corresponds to a word present in our corpus of reviews. The entries of this matrix will denote the number of times the word corresponding to the column appears in the description corresponding to the row. Call your new object `movies_dtm` and create it using the `cast_dtm()` function. As a reminder, we can pipe a data frame containing our word counts into the `cast_dtm()` function, and pass three additional arguments which indicate the *document id*, the column of *words/tokens*, and the column containing the *counts*.  
+    ```{r, echo = FALSE, eval = FALSE}
+    movies_dtm <- movies_word_count %>%
+      cast_dtm(movie_id, word, n)
+    ```
+
+7. Notice that R won't print out the sparse matrix for us even if we ask for it by name. Instead, we are provided some information about the object. In particular, we can see that our matrix is almost 100% sparse, there are only 100,721 non-zero entries among the over 87 Million entries in the matrix. If you would like to see the terms represented by the first ten columns in our document-term matrix, you can do so by running `Terms(movies_dtm)[1:10]`. Try it. Change the indices to see terms represented by other columns as well.  
+    ```{r, echo = FALSE, eval = FALSE}
+    Terms(movies_dtm)[1000:1020]
+    ```
+
+8. Okay, now that we've got our data into a format where every row represents a movie description and every column represents a feature of that movie description (ie. a word it may contain), we are in a scenario where we can try building a topic model using the `LDA()` function from R's `topicmodels` package. As a reminder, when we began, we knew the primary genre of each movie in this dataset of descriptions. There are 20 primary genres present in our movie descriptions dataset, which you can verify by running `length(unique(movies$genre))`. Use `LDA()` on our document-term-matrix representing the movie descriptions and use 20 topics -- it may take about five minutes or so to run. Be sure to store the result in `movies_lda`.  
+    ```{r, echo = FALSE, eval = FALSE}
+    movies_lda <- LDA(movies_dtm, k = 20, control = list(seed = 1337))
+    ```
+
+9. Create an object called `movie_genre_est` by using the `tidy()` function with the arguments `movies_lda` and `matrix = "beta"`. View the result -- what do the columns in the output represent?  
+    ```{r, echo = FALSE, eval = FALSE}
+    movie_genre_est <- tidy(movies_lda, matrix = "beta")
+    ```
+
+10. Similar to what is done in the text, let's use `slice_max()` to find the 10 terms from each topic which are most surely associated with that topic. Adapt the code from the textbook to produce a faceted set of plots showing your results. If you are working in R Markdown, you may want to set the `fig.height` chunk parameter to something like 20 -- you set your chunk arguments within the curly braces at the beginning of an R chunk.  
+    ```{r, fig.height = 20, echo = FALSE, eval = FALSE}
+    movies_top_terms <- movie_genre_est %>%
+      group_by(topic) %>%
+      slice_max(beta, n = 10) %>%
+      ungroup() %>%
+      arrange(topic, -beta)
+    
+    movies_top_terms %>%
+      mutate(term = reorder_within(term, beta, topic)) %>%
+      ggplot() + 
+      geom_col(mapping = aes(x = beta, y = term, fill = factor(topic)), show.legend = FALSE) +
+      facet_wrap(~topic, scales = "free", ncol = 4) +
+      scale_y_reordered()
+    ```
+
+11. After seeing your plot panel, do you think LDA learned topics based on the film genres? Let's see which topic each film was assigned to using `tidy()` again, but setting the `matrix` argument to `"gamma"`. Store your result in an object called `movie_assignments`. View the result.  
+    ```{r, echo = FALSE, eval = FALSE}
+    movie_assignments <- tidy(movies_lda, matrix = "gamma")
+    ```
+
+12. Let's try to extract the topic each movie has been assigned to by adapting our code from 10. We still want to use `slice_max()` here, but let's group by `document` and then take only the row corresponding to the top `gamma` value. After slicing, don't forget to `ungroup()` the data frame. The `document` column will be converted to a *string* by default, so you'll want to use `mutate()` and `as.numeric()` to convert this column back to a numeric column. Store your result in `movie_assignment`.  
+    ```{r, echo = FALSE, eval = FALSE}
+    movie_assignment <- movie_assignments %>%
+      group_by(document) %>%
+      slice_max(gamma, n = 1) %>%
+      ungroup() %>%
+      mutate(document = as.numeric(document)) %>%
+      arrange(document)
+    ```
+
+13. Did our Latent Dirichlet model create topics corresponding to the primary genres? Let's see. We'll start by joining the known primary genre of each movie onto our `movie_assignment` data frame. Then we will build and plot a confusion matrix to see our results!  
+    + Both the original `movies` and `movie_assignment` data frames have columns representing the movie id. In the original `movies` data frame, that column is called `movie_id` while it is called `document` in the `movie_assignment` data frame. Start with the `movie_assignment` data frame and `left_join()` the information from `movies` onto it. You'll need to supply the argument `by = c("document" = "movie_id")` to `left_join()` because the key columns don't share the same name. 
+    + Now that you have both the known primary `genre` and the assigned `topic` contained in the `movie_assignment` data frame, follow and adapt the code from the book to create the tile plot representing the confusion matrix.
+    ```{r, echo = FALSE, eval = FALSE}
+    movie_assignment <- movie_assignment %>%
+      left_join(movies, by = c("document" = "movie_id"))
+
+    movie_assignment %>%
+      count(across(c(topic, genre))) %>%
+      group_by(genre) %>%
+      mutate(percent = n/sum(n)) %>%
+      ggplot() + 
+      geom_tile(mapping = aes(x = topic, y = genre, fill = percent)) + 
+      scale_fill_gradient2(low = "violet", high = "darkred") +
+      theme_minimal() +
+      labs(x = "Assigned Topic", y = "Primary Genre", fill = "% of assignments")
+    ```
+
+***
+
+**Final Thoughts:** It looks like our model didn't choose its topics according to the primary genre. The foreign films and made for TV movies were each split across very few topics, but films from the other genres were shared widely across the 20 topics learned by our LDA model. There are a few reasons for this. First, as we saw in the barplots for each topic, the model learned storylines and settings rather than genres. Secondly, in the original dataset, most films were assigned several genre tags, so genres can overlap quite a bit and my choice to assume that the first genre listed was the *primary genre* may have been a poor one. If you want to dig a bit deeper into how our topic model grouped movies, you can run code blocks similar to the one appearing below:
+
+```{r, echo = TRUE, eval = FALSE}
+movie_assignment %>%
+  filter(topic == 1) %>%
+  select(genre, overview)
+```
+
+In any case, I hope you found this assignment fun and that it showed you a bit about why untidy formats are sometimes preferred over tidy data. Additionally, I hope you'll consider applying topic models to different contexts!
+
+***
+
+<p style = "text-align:left;">[Previous, Read Chapter 6](https://www.tidytextmining.com/topicmodeling.html)
+<span style = "float:right;">[Next, Epilogue](https://agmath.github.io/FacultyUpskilling/)</span>
+</p>
+

@@ -1,0 +1,46 @@
+---
+title: 'Summer 2021 Faculty Upskilling Epilogue'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+  pdf_document: default
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidytext)
+library(tm)
+library(topicmodels)
+```
+
+Bill and I hope you enjoyed this summer workshop as much as we both did. I really appreciate your participation because your work kept me on-task with learning some foundational NLP this summer. I've been wanting to learn about this for a few years now, and our workshop made me do it. I hope you all enjoyed the book, the assignments, and the meet-ups.
+
+## A Quick Recap
+
+We covered quite a bit this summer. We started with an introduction to text as data, learned about principles of tidy data and why having data in a tidy format is important for analysis, we covered lots of exploratory data analyses (EDA) -- though there is still much to learn, and we even looked at an application of machine learning to text. For some of you, this was your first time with R and scripting -- I hope that you were able to see the power that comes with writing code and that you have also gained some intuition about what your GUI-based tools might be doing *under the hood* when you run analyses on text. For those of you who had coded before, I hope you found the challenges that accompany working with text data to be new and interesting.
+
+## What's Next?
+
+So, where do we go from here? 
+
+### NLP and Machine Learning
+
+I hope you'll continue working with NLP (I'm being selfish here -- I want people to continue collaborating with). There are three chapters remaining in the Tidy Text Mining book. Each is a case study which applies the techniques we've been exposed to across the first six chapters of our book. Additionally, Julia Silge has a more advanced NLP book, called [Supervised Machine Learning for Text Analysis in R](https://smltar.com/), which is in current development with coauthor Emil Hvitfeldt. This is my next NLP read -- if any of you are also interested, let me know and we can discuss a plan to work through the book together.
+
+### The Future of Faculty Upskilling Workshops
+
+Beyond NLP and Machine Learning, it is also worth considering where *Faculty Upskilling* goes from here. This is the second summer in which we ran an upskilling workshop for faculty (last summer we covered lots of general data science topics, dealing with tabular data). It would be fun to keep these upskilling workshops going for next summer -- I've found it pretty refreshing to work with faculty colleagues, learning new things. If you've got ideas for a workshop topic, let me know. I think there's lots of potential here, whether we consider workshops spanning several weeks like the two we've run so far, to shorter day-long or week-long workshops. Before Bill departed, he was in conversations with the Center for Teaching and Learning about making these summer workshops a University-sponsored event with the potential for some funding. I think this is something worth pursuing.
+
+## Closing
+
+Again, thank you all for your participation and work this summer. I found this workshop to be really valuable and I hope you did as well. I'm looking forward to the next one! -- Adam
+
+***
+
+<p style = "text-align:left;">[Previous, Homework 6](https://agmath.github.io/FacultyUpskilling/2021_NLP/chapter_5_and_6_homework.html)
+</span>
+</p>
+
