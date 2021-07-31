@@ -38,4 +38,4 @@ A repository of resources from faculty upskilling workshops.
 	+ [Epilogue](https://agmath.github.io/FacultyUpskilling/2021_NLP/epilogue.html)
 <hr>
 
-Built and maintained by [William Jamieson](https://www.williamtjamieson.com/) and [Adam Gilbert](https://sites.google.com/view/agilbertmath)
+Built and maintained by [William Jamieson](https://www.williamtjamieson.com/) and [Adam Gilbert](https://agmath.github.io/)
